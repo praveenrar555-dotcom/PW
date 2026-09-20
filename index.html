@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Tumhare Liye Kuch Khaas</title>
+<title>StudySpace - Daily Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root{
-  --bg-1: #211530;
-  --bg-2: #5c3a5e;
-  --bg-3: #d98a6b;
-  --cream: #f7ecdf;
-  --accent: #e8a15b;
-  --rose: #ff6f91;
+  --bg-1: #0a1128;
+  --bg-2: #12224f;
+  --bg-3: #17418f;
+  --cream: #eef2fb;
+  --accent: #3b82f6;
+  --rose: #22c1c3;
   --glass-bg: rgba(255,255,255,.07);
   --glass-bg-strong: rgba(255,255,255,.12);
   --glass-border: rgba(255,255,255,.16);
-  --font-display: 'Fraunces', serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'Space Grotesk', sans-serif;
 }
 *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -96,7 +96,7 @@ body::before{
 .glow{
   position:absolute; top:-120px; left:50%; transform:translateX(-50%);
   width:380px; height:380px; border-radius:50%; pointer-events:none; z-index:-1;
-  background: radial-gradient(circle, rgba(232,161,91,.32) 0%, rgba(232,161,91,0) 70%);
+  background: radial-gradient(circle, rgba(59,130,246,.32) 0%, rgba(59,130,246,0) 70%);
   filter: blur(6px);
 }
 
@@ -132,7 +132,7 @@ body::before{
 .identity-pill.show{ display:block; }
 
 .activity-banner{
-  background: rgba(232,161,91,.12); border:1px solid rgba(232,161,91,.25); border-radius:14px;
+  background: rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.25); border-radius:14px;
   padding:12px 14px; font-size:.82rem; color: rgba(247,236,223,.88); margin-bottom:16px; text-align:left;
   display:none;
 }
@@ -154,11 +154,11 @@ body::before{
 
 button.cta{
   margin-top:8px; width:100%; padding:16px 20px; border:none; border-radius:999px;
-  background: var(--accent); color:#2a1a10; font-family: var(--font-body); font-weight:600;
+  background: var(--accent); color:#ffffff; font-family: var(--font-body); font-weight:600;
   font-size:1rem; cursor:pointer; transition: transform .15s ease, background .15s ease, opacity .15s ease;
-  touch-action: manipulation; box-shadow: 0 12px 26px rgba(232,161,91,.28);
+  touch-action: manipulation; box-shadow: 0 12px 26px rgba(59,130,246,.28);
 }
-button.cta:hover{ background:#f0b476; transform: translateY(-1px); }
+button.cta:hover{ background:#60a5fa; transform: translateY(-1px); }
 button.cta:active{ transform: translateY(0); }
 button.cta.ghost{ background: transparent; border:1.5px solid rgba(247,236,223,.35); color: var(--cream); box-shadow:none; }
 button.cta.ghost:hover{ background: rgba(247,236,223,.08); }
@@ -179,7 +179,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
 }
 .menu-item .icon-circle{
   width:50px; height:50px; border-radius:50%; flex-shrink:0;
-  background: rgba(232,161,91,.16); display:flex; align-items:center; justify-content:center; font-size:1.35rem;
+  background: rgba(59,130,246,.16); display:flex; align-items:center; justify-content:center; font-size:1.35rem;
 }
 .menu-item .txt{ flex:1; min-width:0; text-align:left; }
 .menu-item h3{ margin:0 0 3px; font-family:var(--font-display); font-size:1.05rem; font-weight:600; }
@@ -197,7 +197,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
 .slide-wrap{ position:relative; padding: 30px 0 10px; }
 .slide-quote{
   position:absolute; top:-14px; left:50%; transform:translateX(-50%);
-  font-family: var(--font-display); font-size:5rem; line-height:1; color: rgba(232,161,91,.2);
+  font-family: var(--font-display); font-size:5rem; line-height:1; color: rgba(59,130,246,.2);
   pointer-events:none; user-select:none;
 }
 .slide-title{
@@ -234,7 +234,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
 
 .dates-list{ display:flex; flex-direction:column; gap:10px; }
 .date-item{ display:flex; align-items:flex-start; gap:12px; background: rgba(0,0,0,.16); border:1px solid rgba(247,236,223,.14); border-radius:14px; padding:13px 14px; }
-.date-item .tag{ width:38px; height:38px; border-radius:50%; background: rgba(232,161,91,.14); display:flex; align-items:center; justify-content:center; font-size:1.05rem; flex-shrink:0; }
+.date-item .tag{ width:38px; height:38px; border-radius:50%; background: rgba(59,130,246,.14); display:flex; align-items:center; justify-content:center; font-size:1.05rem; flex-shrink:0; }
 .date-item .body{ flex:1; min-width:0; text-align:left; }
 .date-item .top-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
 .date-item strong{ font-size:.92rem; }
@@ -248,7 +248,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   width:36px; height:36px; border-radius:50%; border:1px solid var(--glass-border);
   background: rgba(0,0,0,.14); font-size:1rem; cursor:pointer; transition: border-color .15s ease, background .15s ease;
 }
-.tag-picker button.active{ border-color: var(--accent); background: rgba(232,161,91,.2); }
+.tag-picker button.active{ border-color: var(--accent); background: rgba(59,130,246,.2); }
 
 .add-date-form{ display:flex; flex-direction:column; gap:10px; margin-top:16px; padding-top:16px; border-top:1px dashed rgba(247,236,223,.18); }
 .add-date-form input{
@@ -292,7 +292,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   border-radius:18px; padding:11px 14px; font-size:.92rem; line-height:1.45; word-break:break-word;
   backdrop-filter: blur(10px);
 }
-.chat-bubble.me .bubble-body{ background: var(--accent); color:#2a1a10; border-bottom-right-radius:5px; }
+.chat-bubble.me .bubble-body{ background: var(--accent); color:#ffffff; border-bottom-right-radius:5px; }
 .chat-bubble.them .bubble-body{ background: rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26); color: var(--cream); border-bottom-left-radius:5px; }
 .chat-bubble .bubble-foot{ display:flex; align-items:center; gap:6px; }
 .chat-bubble .msg-del{
@@ -330,8 +330,8 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
 }
 .chat-input-row input[type="text"]::placeholder{ color: rgba(247,236,223,.4); }
 .chat-input-row input[type="text"]:focus{ outline:none; border-color: var(--accent); }
-.chat-send{ background: var(--accent); color:#2a1a10; border-color:transparent; }
-.chat-send:hover{ background:#f0b476; }
+.chat-send{ background: var(--accent); color:#ffffff; border-color:transparent; }
+.chat-send:hover{ background:#60a5fa; }
 
 /* ---------------- LIGHTBOX (opens shared photos/videos full-screen) ---------------- */
 .lightbox{
@@ -369,23 +369,23 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   <div class="page">
     <div class="glow"></div>
     <div class="page-main">
-      <span class="mark">💌</span>
-      <h1 class="hero-title">Hey Tum</h1>
-      <p class="hero-sub">ye sirf tumhare liye hai — dekhne ke liye sign in karo</p>
+      <span class="mark">📘</span>
+      <h1 class="hero-title">Welcome Back</h1>
+      <p class="hero-sub">Apna daily study dashboard dekhne ke liye sign in karo</p>
       <form id="loginForm" class="form-block" autocomplete="off">
         <div class="field">
-          <label for="username">Tumhara naam</label>
-          <input id="username" type="text" placeholder="apna naam likho" required>
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="apna username likho" required>
         </div>
         <div class="field">
           <label for="password">Password</label>
           <input id="password" type="password" placeholder="••••••••" required>
         </div>
         <div class="error" id="errorMsg"></div>
-        <button type="submit" class="cta">Andar aao</button>
+        <button type="submit" class="cta">Login</button>
       </form>
     </div>
-    <p class="foot-note">banaya gaya, khaas tumhare liye ✨</p>
+    <p class="foot-note">Tumhara personal study space 📘</p>
   </div>
 </div>
 
@@ -394,34 +394,34 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   <div class="page">
     <div class="glow"></div>
     <div class="page-top">
-      <span class="mark">✨</span>
-      <h2 class="section-title" id="menuGreeting">Tumhare Liye Kuch Khaas</h2>
-      <p class="hero-sub">ek cheez chuno</p>
+      <span class="mark">🎯</span>
+      <h2 class="section-title" id="menuGreeting">Your Dashboard</h2>
+      <p class="hero-sub">ek section chuno</p>
     </div>
     <div class="activity-banner" id="activityBanner"></div>
     <div class="page-main menu-list">
       <div class="menu-item" id="btnSurprise">
-        <span class="icon-circle">💌</span>
-        <div class="txt"><h3>Surprise</h3><p>kuch khaas kehna hai tumse</p></div>
+        <span class="icon-circle">📘</span>
+        <div class="txt"><h3>Daily Challenge</h3><p>aaj ka naya task complete karo</p></div>
         <span class="chev">›</span>
       </div>
       <div class="menu-item" id="btnChat">
         <span class="icon-circle">🗨️</span>
-        <div class="txt"><h3>Chat</h3><p>seedha baat karo, photo-video bhi bhejo</p></div>
+        <div class="txt"><h3>Discussion</h3><p>apne doubts poocho, photo-video bhi bhejo</p></div>
         <span class="chev">›</span>
       </div>
       <div class="menu-item" id="btnNotes">
-        <span class="icon-circle">💬</span>
-        <div class="txt"><h3>Pyar Bhari Baatein</h3><p>jab bhi mann kare, yaha aa jaana</p></div>
+        <span class="icon-circle">📝</span>
+        <div class="txt"><h3>Study Notes</h3><p>important notes yahin milenge</p></div>
         <span class="chev">›</span>
       </div>
       <div class="menu-item locked" id="btnCountdown">
-        <span class="icon-circle">⏳</span>
-        <div class="txt"><h3>Hamari Kahani</h3><p id="countdownLockNote">pehle Surprise wale "Haan" pe tap karo</p></div>
+        <span class="icon-circle">📊</span>
+        <div class="txt"><h3>Progress Tracker</h3><p id="countdownLockNote">pehle Daily Challenge complete karo</p></div>
         <span class="chev">›</span>
       </div>
     </div>
-    <p class="foot-note">tumhare liye, dil se 💛</p>
+    <p class="foot-note">Keep learning, keep growing 📘</p>
   </div>
 </div>
 
@@ -461,32 +461,32 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   </div>
 </div>
 
-<!-- OUR STORY / COUNTDOWN -->
+<!-- PROGRESS TRACKER -->
 <div class="screen" id="screen-countdown">
   <div class="page">
     <div class="top-bar">
       <button class="icon-btn" id="countdownBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Hamari Kahani</h2>
+      <h2 class="top-title">Progress Tracker</h2>
       <span class="icon-btn spacer" aria-hidden="true">←</span>
     </div>
     <div class="page-main countdown-main">
       <div class="story-hero">
-        <p class="cap">hum saath kitne time se hain</p>
+        <p class="cap">seekhna shuru kiye kitna time ho gaya</p>
         <div class="stat-grid" id="togetherNums"></div>
         <p class="cap since">3 July 2025 se</p>
       </div>
 
       <div class="counter-card">
-        <h3>Khaas Tareekhen</h3>
+        <h3>Important Dates</h3>
         <div class="dates-list" id="datesList"></div>
         <form class="add-date-form" id="addDateForm">
           <div class="tag-picker" id="tagPicker">
-            <button type="button" data-tag="🎂" class="active" aria-label="Birthday">🎂</button>
-            <button type="button" data-tag="💍" aria-label="Anniversary">💍</button>
-            <button type="button" data-tag="✈️" aria-label="Trip">✈️</button>
-            <button type="button" data-tag="💫" aria-label="Other">💫</button>
+            <button type="button" data-tag="📝" class="active" aria-label="Assignment">📝</button>
+            <button type="button" data-tag="📅" aria-label="Exam">📅</button>
+            <button type="button" data-tag="⏰" aria-label="Reminder">⏰</button>
+            <button type="button" data-tag="🎯" aria-label="Goal">🎯</button>
           </div>
-          <input type="text" id="dateLabel" placeholder="Naam do is date ko (e.g. Uska Birthday)" required>
+          <input type="text" id="dateLabel" placeholder="Is date ko naam do (e.g. Exam Date)" required>
           <input type="datetime-local" id="dateValue" required>
           <button type="submit" class="cta small">+ Date Add Karo</button>
         </form>
@@ -502,7 +502,7 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   <div class="page chat-page">
     <div class="top-bar">
       <button class="icon-btn" id="chatBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Chat</h2>
+      <h2 class="top-title">Discussion</h2>
       <button class="icon-btn" id="chatDeleteAllIcon" aria-label="Poori chat delete karo">🗑️</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
@@ -520,19 +520,19 @@ button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4p
   </div>
 </div>
 
-<!-- LOVE NOTES -->
+<!-- STUDY NOTES -->
 <div class="screen" id="screen-notes">
   <div class="page">
     <div class="top-bar">
       <button class="icon-btn" id="notesBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Pyar Bhari Baatein</h2>
+      <h2 class="top-title">Study Notes</h2>
       <span class="icon-btn spacer" aria-hidden="true">←</span>
     </div>
     <div class="page-main" style="text-align:center;">
-      <span class="mark" style="margin:0 auto 20px;">💬</span>
-      <p class="hero-sub" style="margin-left:auto;margin-right:auto;margin-bottom:20px;">jab bhi mann udaas ho, ek baat sun lo</p>
+      <span class="mark" style="margin:0 auto 20px;">📝</span>
+      <p class="hero-sub" style="margin-left:auto;margin-right:auto;margin-bottom:20px;">jab bhi thoda motivation chahiye, ek note padh lo</p>
       <div class="note-card" id="noteCard">Loading...</div>
-      <button class="cta ghost small" id="noteShuffle" style="margin:20px auto 0;">Ek Aur Sunao</button>
+      <button class="cta ghost small" id="noteShuffle" style="margin:20px auto 0;">Next Note</button>
     </div>
   </div>
 </div>
@@ -608,7 +608,7 @@ const loveNotes = [
 (function spawnFloatingLayer(){
   const layer = document.getElementById('floatingLayer');
   if(!layer) return;
-  const glyphs = ['💛','✨','💫','💗'];
+  const glyphs = ['📘','✏️','⭐','📐'];
   const count = window.innerWidth < 640 ? 9 : 16;
   for(let i=0;i<count;i++){
     const span = document.createElement('span');
@@ -677,7 +677,7 @@ async function refreshActivityBanner(){
   if(error || !data){ el.classList.remove('show'); return; }
   const msgs = [];
   if(data.surprise_unlocked && data.surprise_unlocked_by && data.surprise_unlocked_by !== identity){
-    msgs.push(data.surprise_unlocked_by + ' ne "Haan" bol diya tha 💛');
+    msgs.push(data.surprise_unlocked_by + ' ne Daily Challenge complete kar liya ✅');
   }
   if(data.last_seen_by && data.last_seen_by !== identity && data.last_seen_at){
     msgs.push(data.last_seen_by + ' yaha ' + timeAgo(data.last_seen_at) + ' aaya/aayi tha');
@@ -715,10 +715,10 @@ function refreshMenuLock(){
   const note = document.getElementById('countdownLockNote');
   if(surpriseUnlocked){
     btnCountdown.classList.remove('locked');
-    note.textContent = "humara safar dekho ✨";
+    note.textContent = "apna progress dekho 📊";
   } else {
     btnCountdown.classList.add('locked');
-    note.textContent = 'pehle Surprise wale "Haan" pe tap karo';
+    note.textContent = 'pehle Daily Challenge complete karo';
   }
 }
 
@@ -730,7 +730,7 @@ const errorMsg = document.getElementById('errorMsg');
   await loadAppState();
   refreshMenuLock();
   if(localStorage.getItem('kk_logged_in') === 'true' && identity){
-    document.getElementById('menuGreeting').textContent = 'Tumhare Liye Kuch Khaas, ' + identity;
+    document.getElementById('menuGreeting').textContent = 'Welcome, ' + identity;
     updateIdentityBadge();
     showScreen('menu');
     pingLastSeen();
@@ -741,12 +741,12 @@ loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const nameVal = document.getElementById('username').value.trim();
   const passVal = document.getElementById('password').value;
-  if(!nameVal){ errorMsg.textContent = "Pehle apna naam to batao :)"; return; }
-  if(passVal !== FIXED_PASSWORD){ errorMsg.textContent = "Ye sahi nahi hai — dobara try karo."; return; }
+  if(!nameVal){ errorMsg.textContent = "Pehle apna username to daalo"; return; }
+  if(passVal !== FIXED_PASSWORD){ errorMsg.textContent = "Password galat hai — dobara try karo."; return; }
   identity = nameVal;
   localStorage.setItem('kk_identity', identity);
   localStorage.setItem('kk_logged_in', 'true');
-  document.getElementById('menuGreeting').textContent = 'Tumhare Liye Kuch Khaas, ' + identity;
+  document.getElementById('menuGreeting').textContent = 'Welcome, ' + identity;
   updateIdentityBadge();
   showScreen('menu');
   pingLastSeen();
@@ -879,8 +879,8 @@ noBtn.addEventListener('click', () => {
 let togetherTimer = null;
 let datesTimer = null;
 let specialDates = [];
-let selectedTag = '🎂';
-const TAGS = ['🎂','💍','✈️','💫'];
+let selectedTag = '📝';
+const TAGS = ['📝','📅','⏰','🎯'];
 
 document.getElementById('tagPicker').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-tag]');
@@ -934,7 +934,7 @@ function splitLabel(label){
     }
     if(label.startsWith(t + ' ')) return { tag: t, addedBy: null, text: label.slice(t.length + 1) };
   }
-  return { tag: '💫', addedBy: null, text: label };
+  return { tag: '🎯', addedBy: null, text: label };
 }
 
 function renderDatesList(){
@@ -1033,8 +1033,8 @@ document.getElementById('addDateForm').addEventListener('submit', async (e) => {
   specialDates.sort((a,b) => new Date(a.date_value) - new Date(b.date_value));
   renderDatesList();
   document.getElementById('addDateForm').reset();
-  selectedTag = '🎂';
-  document.querySelectorAll('#tagPicker button').forEach(b => b.classList.toggle('active', b.dataset.tag === '🎂'));
+  selectedTag = '📝';
+  document.querySelectorAll('#tagPicker button').forEach(b => b.classList.toggle('active', b.dataset.tag === '📝'));
 });
 
 function escapeHTML(str){
