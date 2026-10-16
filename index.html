@@ -2,1374 +2,613 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>StudySpace - Daily Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NEET Quick Revision Notes</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:Arial,Helvetica,sans-serif;background:#52565c;color:#222}
+.screen{display:none}.screen.active{display:block}
+/* PDF VIEW */
+.pdfbar{position:sticky;top:0;z-index:5;background:#2f3237;color:#fff;padding:12px 16px;font-size:.9rem;display:flex;justify-content:space-between;padding-top:max(12px,env(safe-area-inset-top))}
+.page{background:#fff;max-width:640px;margin:14px auto;padding:22px 18px 14px;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.page h1{font-size:1rem;margin:0 0 2px;color:#0b3d91}
+.page .sub{font-size:.65rem;color:#777;border-bottom:1px solid #ccc;padding-bottom:6px;margin-bottom:8px}
+.ln{font-size:.7rem;line-height:1.5;padding:3px 0;color:#222;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 
-:root{
-  --bg-1: #0a1128;
-  --bg-2: #12224f;
-  --bg-3: #17418f;
-  --cream: #eef2fb;
-  --accent: #3b82f6;
-  --rose: #22c1c3;
-  --glass-bg: rgba(255,255,255,.07);
-  --glass-bg-strong: rgba(255,255,255,.12);
-  --glass-border: rgba(255,255,255,.16);
-  --font-display: 'Poppins', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
-}
-*{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body{ margin:0; min-height:100%; }
-body{
-  font-family: var(--font-body);
-  color: var(--cream);
-  background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
-  position: relative;
-}
-body::before{
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,.5), transparent),
-    radial-gradient(1.5px 1.5px at 30% 12%, rgba(255,255,255,.4), transparent),
-    radial-gradient(2px 2px at 72% 16%, rgba(255,255,255,.4), transparent),
-    radial-gradient(1.5px 1.5px at 86% 30%, rgba(255,255,255,.3), transparent),
-    radial-gradient(1.5px 1.5px at 48% 8%, rgba(255,255,255,.3), transparent),
-    radial-gradient(1.5px 1.5px at 20% 45%, rgba(255,255,255,.22), transparent),
-    radial-gradient(1.5px 1.5px at 92% 55%, rgba(255,255,255,.22), transparent),
-    radial-gradient(1.5px 1.5px at 65% 70%, rgba(255,255,255,.2), transparent),
-    radial-gradient(1.5px 1.5px at 12% 80%, rgba(255,255,255,.18), transparent),
-    radial-gradient(1.5px 1.5px at 40% 92%, rgba(255,255,255,.18), transparent);
-}
+.fig{margin:8px 0 10px;border:1px solid #ddd;border-radius:6px;padding:6px;background:#fafcff}.fig svg{width:100%;height:auto;display:block}.fig svg text{fill:#333;stroke:none;font-size:9px}.fig .cap{text-align:center;font-size:.58rem;color:#666;margin-top:2px}
+.page{display:flex;flex-direction:column;min-height:600px;padding:0 18px 12px;font-family:Georgia,'Times New Roman',serif}
+.ph{display:flex;justify-content:space-between;font-size:.6rem;color:#666;border-bottom:2px solid;padding:10px 0 6px;margin-bottom:10px;font-family:Arial,sans-serif}
+.cover{background:linear-gradient(135deg,#0b3d91,#3b82f6);color:#fff;border-radius:8px;padding:16px;margin-bottom:12px;font-family:Arial,sans-serif}
+.cover .big{font-size:1.15rem;font-weight:700}.cover .sm{font-size:.62rem;opacity:.85;margin-top:4px}
+.page h1{font-size:1.05rem;margin:4px 0 8px;font-family:Arial,sans-serif}
+.page h2{font-size:.78rem;margin:12px 0 4px;padding-left:8px;border-left:4px solid;font-family:Arial,sans-serif}
+.tip{font-size:.66rem;background:#f4f7ff;border-left:4px solid;padding:7px 9px;margin:10px 0 2px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif}
+.pf{margin-top:auto !important}
+.pf{text-align:center;font-size:.6rem;color:#888;margin-top:8px;border-top:1px solid #ddd;padding-top:6px}
+/* PASSWORD MODAL */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.box{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px}
+.box h3{margin:0 0 12px}
+.box input{width:100%;padding:12px;margin-bottom:10px;border:1px solid #bbb;border-radius:8px;font-size:1rem}
+.box .err{color:#c0392b;font-size:.82rem;min-height:18px}
+.row{display:flex;gap:10px}
+.btn{flex:1;padding:12px;border:none;border-radius:999px;background:#3b82f6;color:#fff;font-weight:600;font-size:.95rem}
+.btn.g{background:#ddd;color:#222}
+/* CHAT */
+#screen-chat{position:fixed;inset:0;z-index:20;background:linear-gradient(180deg,#0a1128,#12224f);color:#eef2fb}
+#screen-chat.active{display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;padding:max(12px,env(safe-area-inset-top)) 16px 10px}
+.top h2{flex:1;text-align:center;margin:0;font-size:1.1rem}
+.ib{width:42px;height:42px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#eef2fb;font-size:1.05rem}
+.msgs{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:14px 18px;margin:0 10px;background:rgba(0,0,0,.3);border-radius:20px 20px 0 0}
+.b{max-width:78%;display:flex;flex-direction:column;gap:5px}
+.b.me{align-self:flex-end;align-items:flex-end}.b.them{align-self:flex-start}
+.who{font-size:.65rem;opacity:.55;padding:0 4px}
+.bb{border-radius:18px;padding:11px 14px;font-size:.92rem;line-height:1.45;word-break:break-word}
+.me .bb{background:#3b82f6;color:#fff;border-bottom-right-radius:5px}
+.them .bb{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);border-bottom-left-radius:5px}
+.foot{display:flex;align-items:center;gap:6px}.time{font-size:.6rem;opacity:.4;padding:0 4px}
+.del{background:none;border:none;color:rgba(255,180,168,.6);font-size:.8rem}
+.media{max-width:220px;border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,.16)}
+.media img,.media video{display:block;width:100%;max-height:280px;object-fit:cover}
+.empty{text-align:center;opacity:.5;font-size:.85rem;margin-top:30px}
+.prev{margin:0 20px 8px;padding:8px 10px;display:none;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:14px}
+.prev .th{width:38px;height:38px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.prev .th img{width:100%;height:100%;object-fit:cover}
+.prev .nm{flex:1;font-size:.78rem;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prev button{background:none;border:none;color:#ffb4a8;font-size:1.1rem}
+.inrow{display:flex;align-items:center;gap:8px;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));margin:0 10px;border-radius:0 0 20px 20px;background:rgba(0,0,0,.4)}
+.inrow input[type=text]{flex:1;padding:12px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#eef2fb;font-size:.92rem}
+.inrow input:focus{outline:none;border-color:#3b82f6}
+.send{background:#3b82f6;border-color:transparent}
+.lb{position:fixed;inset:0;z-index:100;background:rgba(5,5,10,.93);display:none;align-items:center;justify-content:center;padding:24px}
+.lb.show{display:flex}
+.lb img,.lb video{max-width:100%;max-height:88vh;border-radius:12px}
+.lb button{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.3rem}
 
-/* ambient full-page color + drifting hearts, so the whole page feels alive, not just the middle */
-.bg-decor{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-.bg-decor span{ position:absolute; border-radius:50%; filter: blur(70px); }
-.bg-decor .orb-1{ width:60vw; max-width:420px; height:60vw; max-height:420px; top:-14%; left:-16%; background: var(--rose); opacity:.32; }
-.bg-decor .orb-2{ width:65vw; max-width:480px; height:65vw; max-height:480px; bottom:-18%; right:-16%; background: var(--bg-3); opacity:.5; }
-.bg-decor .orb-3{ width:40vw; max-width:280px; height:40vw; max-height:280px; top:38%; right:-14%; background: var(--accent); opacity:.25; }
-.bg-decor .orb-4{ width:34vw; max-width:240px; height:34vw; max-height:240px; bottom:12%; left:-12%; background: var(--accent); opacity:.2; }
-
-.floating-layer{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-.floating-layer span{
-  position:absolute; bottom:-12%; left:var(--x, 50%); font-size:var(--sz, 1.1rem);
-  opacity:0; filter: drop-shadow(0 2px 6px rgba(0,0,0,.2));
-  animation: floatUp var(--dur, 24s) linear infinite; animation-delay: var(--delay, 0s);
-}
-@keyframes floatUp{
-  0%   { transform: translate(0,0) rotate(0deg); opacity:0; }
-  10%  { opacity:.5; }
-  50%  { transform: translate(var(--drift, 24px), -58vh) rotate(14deg); }
-  90%  { opacity:.36; }
-  100% { transform: translate(calc(var(--drift, 24px) * -1), -112vh) rotate(-12deg); opacity:0; }
-}
-
-.screen{ display:none; position:relative; z-index:1; width:100%; }
-.screen.active{ display:block; }
-
-.page{
-  min-height:100dvh; width:100%; max-width:600px; margin:0 auto;
-  display:flex; flex-direction:column;
-  padding: 34px 24px calc(28px + env(safe-area-inset-bottom, 0px));
-  position:relative;
-}
-
-@media (min-width: 680px){
-  body{ display:flex; align-items:flex-start; justify-content:center; padding: 5vh 20px; }
-  .page{
-    min-height:min(88vh, 780px); max-height:88vh; overflow-y:auto;
-    margin:0; border-radius:32px;
-    background: var(--glass-bg);
-    border:1px solid var(--glass-border);
-    box-shadow: 0 40px 90px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
-    backdrop-filter: blur(20px);
-    padding: 44px 46px 40px;
-  }
-}
-
-.page-top{ flex:0 0 auto; }
-.page-bottom{ flex:0 0 auto; padding-top:22px; }
-.page-main{ flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; }
-
-.glow{
-  position:absolute; top:-120px; left:50%; transform:translateX(-50%);
-  width:380px; height:380px; border-radius:50%; pointer-events:none; z-index:-1;
-  background: radial-gradient(circle, rgba(59,130,246,.32) 0%, rgba(59,130,246,0) 70%);
-  filter: blur(6px);
-}
-
-.mark{
-  width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:1.4rem; margin-bottom:20px; background: var(--glass-bg); border:1px solid var(--glass-border);
-  backdrop-filter: blur(10px);
-}
-
-.hero-title{ font-family: var(--font-display); font-weight:600; font-size: clamp(2.1rem, 8vw, 3.2rem); line-height:1.08; margin:0 0 14px; }
-.hero-sub{ font-size: clamp(.92rem, 2.6vw, 1.05rem); color: rgba(247,236,223,.72); margin:0 0 30px; max-width:38ch; line-height:1.6; }
-.section-title{ font-family: var(--font-display); font-weight:600; font-size: clamp(1.6rem, 5vw, 2rem); margin:0 0 6px; }
-.foot-note{ font-size:.78rem; color: rgba(247,236,223,.4); text-align:center; margin-top:18px; }
-
-/* ---------------- top bar (title + back button, used on every inner screen) ---------------- */
-.top-bar{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }
-.top-bar .top-title{ flex:1; text-align:center; font-family:var(--font-display); font-weight:600; font-size:1.15rem; margin:0; }
-.icon-btn{
-  width:42px; height:42px; flex-shrink:0; border-radius:50%; border:1px solid var(--glass-border);
-  background: var(--glass-bg); color:var(--cream); font-size:1.05rem; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; backdrop-filter: blur(10px);
-  transition: background .18s ease, transform .18s ease;
-}
-.icon-btn:hover{ background: var(--glass-bg-strong); transform: translateX(-2px); }
-.icon-btn.spacer{ visibility:hidden; }
-
-/* ---------------- identity (Praveen / Kritika) ---------------- */
-.identity-pill{
-  position:fixed; top:14px; right:14px; z-index:5; display:none;
-  background: var(--glass-bg); border:1px solid var(--glass-border); backdrop-filter: blur(10px);
-  padding:7px 14px; border-radius:999px; font-size:.72rem; color: rgba(247,236,223,.78);
-}
-.identity-pill.show{ display:block; }
-
-.activity-banner{
-  background: rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.25); border-radius:14px;
-  padding:12px 14px; font-size:.82rem; color: rgba(247,236,223,.88); margin-bottom:16px; text-align:left;
-  display:none;
-}
-.activity-banner.show{ display:block; }
-.added-by{ font-size:.65rem; color: rgba(247,236,223,.4); margin-top:5px; }
-
-/* ---------------- form ---------------- */
-.form-block{ width:100%; }
-.field{ text-align:left; margin-bottom:16px; }
-.field label{ display:block; font-size:.82rem; margin-bottom:7px; color: rgba(247,236,223,.75); }
-.field input{
-  width:100%; padding:14px 15px; border-radius:12px; border:1px solid var(--glass-border);
-  background: var(--glass-bg); color: var(--cream); font-family: var(--font-body); font-size:1rem;
-  backdrop-filter: blur(10px);
-}
-.field input::placeholder{ color: rgba(247,236,223,.4); }
-.field input:focus{ outline:none; border-color: var(--accent); background: var(--glass-bg-strong); }
-.error{ color:#ffb4a8; font-size:.85rem; min-height:20px; margin-bottom:6px; }
-
-button.cta{
-  margin-top:8px; width:100%; padding:16px 20px; border:none; border-radius:999px;
-  background: var(--accent); color:#ffffff; font-family: var(--font-body); font-weight:600;
-  font-size:1rem; cursor:pointer; transition: transform .15s ease, background .15s ease, opacity .15s ease;
-  touch-action: manipulation; box-shadow: 0 12px 26px rgba(59,130,246,.28);
-}
-button.cta:hover{ background:#60a5fa; transform: translateY(-1px); }
-button.cta:active{ transform: translateY(0); }
-button.cta.ghost{ background: transparent; border:1.5px solid rgba(247,236,223,.35); color: var(--cream); box-shadow:none; }
-button.cta.ghost:hover{ background: rgba(247,236,223,.08); }
-button.cta:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
-button.cta.small{ width:auto; padding:11px 20px; font-size:.88rem; margin-top:4px; }
-
-.btn-row{ display:flex; gap:12px; margin-top:6px; }
-.btn-row button{ margin-top:0; }
-
-/* ---------------- MENU ---------------- */
-.menu-list{ display:flex; flex-direction:column; gap:12px; }
-.menu-item{
-  display:flex; align-items:center; gap:14px;
-  background: var(--glass-bg); border:1px solid var(--glass-border); border-radius:20px;
-  padding: 16px 16px; cursor:pointer; color:var(--cream);
-  backdrop-filter: blur(14px);
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
-}
-.menu-item .icon-circle{
-  width:50px; height:50px; border-radius:50%; flex-shrink:0;
-  background: rgba(59,130,246,.16); display:flex; align-items:center; justify-content:center; font-size:1.35rem;
-}
-.menu-item .txt{ flex:1; min-width:0; text-align:left; }
-.menu-item h3{ margin:0 0 3px; font-family:var(--font-display); font-size:1.05rem; font-weight:600; }
-.menu-item p{ margin:0; font-size:.82rem; color: rgba(247,236,223,.6); }
-.menu-item .chev{ font-size:1.2rem; color: rgba(247,236,223,.32); flex-shrink:0; }
-.menu-item:hover{ transform: translateX(3px); border-color: var(--accent); background: var(--glass-bg-strong); }
-.menu-item.locked{ opacity:.42; cursor:not-allowed; }
-.menu-item.locked:hover{ transform:none; border-color: var(--glass-border); background: var(--glass-bg); }
-
-/* ---------------- SURPRISE (letter-reading slides) ---------------- */
-.progress-track{ flex:1; height:4px; border-radius:999px; background: rgba(247,236,223,.15); overflow:hidden; }
-.progress-fill{ height:100%; width:4.5%; background: linear-gradient(90deg, var(--accent), var(--rose)); border-radius:999px; transition: width .35s ease; }
-.slide-count{ font-size:.75rem; color: rgba(247,236,223,.5); min-width:44px; text-align:right; }
-
-.slide-wrap{ position:relative; padding: 30px 0 10px; }
-.slide-quote{
-  position:absolute; top:-14px; left:50%; transform:translateX(-50%);
-  font-family: var(--font-display); font-size:5rem; line-height:1; color: rgba(59,130,246,.2);
-  pointer-events:none; user-select:none;
-}
-.slide-title{
-  font-family: var(--font-display); font-weight:600; text-align:center;
-  font-size: clamp(1.6rem, 6.5vw, 2.3rem); line-height:1.42; margin:0 auto; max-width:26ch;
-  position:relative; animation: slideIn .5s ease;
-}
-@keyframes slideIn{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform:translateY(0); } }
-#surpriseStage #noBtn{ position:relative; transition: left .35s ease, top .35s ease; }
-#surpriseStage.dodging #noBtn{ position:fixed; z-index:50; width:auto; padding:14px 24px; }
-
-/* ---------------- CELEBRATE ---------------- */
-.celebrate-page{ justify-content:center; text-align:center; }
-.hearts-burst{ position:absolute; inset:0; pointer-events:none; overflow:visible; }
-.hearts-burst span{ position:absolute; bottom:0; left:50%; font-size:1.5rem; opacity:0; animation: burst 1.6s ease-out forwards; }
-@keyframes burst{ 0%{ opacity:1; transform: translate(-50%,0) scale(.6);} 100%{ opacity:0; transform: translate(calc(-50% + var(--dx,0px)), -60vh) scale(1.2) rotate(var(--rot,0deg));} }
-.celebrate-page .hero-title{ color:#fff; text-shadow: 0 2px 10px rgba(0,0,0,.25); }
-
-/* ---------------- OUR STORY (countdown) ---------------- */
-.story-hero{ text-align:center; padding: 6px 4px 22px; border-bottom:1px dashed rgba(247,236,223,.16); margin-bottom:22px; }
-.story-hero .cap{ font-size:.8rem; color: rgba(247,236,223,.55); margin:0; }
-.story-hero .cap.since{ margin-top:14px; }
-.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); margin:14px 0 0; }
-.stat-grid .stat{ text-align:center; padding:0 4px; border-left:1px solid rgba(247,236,223,.14); }
-.stat-grid .stat:first-child{ border-left:none; }
-.stat-grid .num{ font-family:var(--font-display); font-size:clamp(1.35rem,5vw,1.85rem); font-weight:600; color:var(--accent); }
-.stat-grid .lbl{ font-size:.66rem; color: rgba(247,236,223,.55); margin-top:4px; }
-
-.counter-card{
-  background: var(--glass-bg); border:1px solid var(--glass-border); border-radius:18px;
-  padding:20px 18px; backdrop-filter: blur(14px);
-}
-.counter-card h3{ font-family:var(--font-display); font-weight:600; font-size:1.02rem; margin:0 0 14px; }
-
-.dates-list{ display:flex; flex-direction:column; gap:10px; }
-.date-item{ display:flex; align-items:flex-start; gap:12px; background: rgba(0,0,0,.16); border:1px solid rgba(247,236,223,.14); border-radius:14px; padding:13px 14px; }
-.date-item .tag{ width:38px; height:38px; border-radius:50%; background: rgba(59,130,246,.14); display:flex; align-items:center; justify-content:center; font-size:1.05rem; flex-shrink:0; }
-.date-item .body{ flex:1; min-width:0; text-align:left; }
-.date-item .top-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-.date-item strong{ font-size:.92rem; }
-.date-item .del{ background:none; border:none; color:rgba(255,180,168,.6); cursor:pointer; font-size:1.1rem; line-height:1; flex-shrink:0; }
-.date-item .mini-nums{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
-.date-item .mini-nums .u{ font-size:.94rem; font-weight:600; color:var(--accent); }
-.date-item .mini-nums .l{ font-size:.6rem; color:rgba(247,236,223,.48); }
-
-.tag-picker{ display:flex; gap:8px; margin-bottom:2px; }
-.tag-picker button{
-  width:36px; height:36px; border-radius:50%; border:1px solid var(--glass-border);
-  background: rgba(0,0,0,.14); font-size:1rem; cursor:pointer; transition: border-color .15s ease, background .15s ease;
-}
-.tag-picker button.active{ border-color: var(--accent); background: rgba(59,130,246,.2); }
-
-.add-date-form{ display:flex; flex-direction:column; gap:10px; margin-top:16px; padding-top:16px; border-top:1px dashed rgba(247,236,223,.18); }
-.add-date-form input{
-  padding:12px 13px; border-radius:10px; border:1px solid var(--glass-border);
-  background: rgba(0,0,0,.16); color: var(--cream); font-family: var(--font-body); font-size:.92rem;
-}
-.add-date-form input:focus{ outline:none; border-color:var(--accent); }
-
-.status-note{ font-size:.78rem; color:rgba(247,236,223,.5); text-align:center; margin: 16px 0 0; }
-.empty-note{ margin:0; font-size:.85rem; color:rgba(247,236,223,.55); }
-
-/* ---------------- LOVE NOTES ---------------- */
-.note-card{
-  background: var(--glass-bg); border:1px solid var(--glass-border); border-radius:22px;
-  padding: 30px 24px; backdrop-filter: blur(16px); text-align:center;
-  font-family: var(--font-display); font-size: clamp(1.1rem, 4vw, 1.35rem); line-height:1.55; font-weight:500;
-  min-height:140px; display:flex; align-items:center; justify-content:center;
-}
-
-/* ---------------- CHAT ---------------- */
-/* chat takes over the FULL phone screen, not the padded card layout used elsewhere */
-#screen-chat .page.chat-page{
-  position:fixed; inset:0; z-index:2;
-  width:100%; height:100%; max-width:none; max-height:none;
-  margin:0; border-radius:0; border:none; box-shadow:none; backdrop-filter:none;
-  padding: max(14px, env(safe-area-inset-top)) 0 0;
-}
-.chat-page .top-bar{ padding:0 24px; margin-bottom:10px; }
-.chat-messages{
-  flex:1 1 auto; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
-  padding: 14px 20px 14px; margin: 0 10px;
-  background: linear-gradient(180deg, rgba(12,7,17,.55) 0%, rgba(12,7,17,.66) 100%);
-  border-radius: 20px 20px 0 0;
-}
-.chat-day-sep{ text-align:center; font-size:.68rem; color: rgba(247,236,223,.55); margin:10px 0 2px; }
-.chat-bubble{ max-width:78%; display:flex; flex-direction:column; gap:6px; }
-.chat-bubble.me{ align-self:flex-end; align-items:flex-end; }
-.chat-bubble.them{ align-self:flex-start; align-items:flex-start; }
-.chat-bubble .who{ font-size:.65rem; color: rgba(247,236,223,.55); padding:0 4px; }
-.chat-bubble .bubble-body{
-  border-radius:18px; padding:11px 14px; font-size:.92rem; line-height:1.45; word-break:break-word;
-  backdrop-filter: blur(10px);
-}
-.chat-bubble.me .bubble-body{ background: var(--accent); color:#ffffff; border-bottom-right-radius:5px; }
-.chat-bubble.them .bubble-body{ background: rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26); color: var(--cream); border-bottom-left-radius:5px; }
-.chat-bubble .bubble-foot{ display:flex; align-items:center; gap:6px; }
-.chat-bubble .msg-del{
-  background:none; border:none; color: rgba(255,180,168,.55); font-size:.8rem; line-height:1;
-  cursor:pointer; padding:2px 3px; flex-shrink:0;
-}
-.chat-bubble .msg-del:hover{ color:#ffb4a8; }
-.chat-bubble .bubble-media{
-  max-width:220px; border-radius:14px; overflow:hidden; cursor:pointer; border:1px solid var(--glass-border);
-  display:block;
-}
-.chat-bubble .bubble-media img, .chat-bubble .bubble-media video{ display:block; width:100%; max-height:280px; object-fit:cover; }
-.chat-bubble .time{ font-size:.6rem; color: rgba(247,236,223,.35); padding:0 4px; }
-.chat-empty{ text-align:center; color: rgba(247,236,223,.45); font-size:.85rem; margin-top:30px; }
-
-.chat-preview{
-  margin:0 20px 8px; padding:8px 10px; display:flex; align-items:center; gap:10px;
-  background: var(--glass-bg); border:1px solid var(--glass-border); border-radius:14px;
-}
-.chat-preview-thumb{ width:38px; height:38px; border-radius:8px; overflow:hidden; flex-shrink:0; background: rgba(0,0,0,.2); display:flex; align-items:center; justify-content:center; font-size:1rem; }
-.chat-preview-thumb img, .chat-preview-thumb video{ width:100%; height:100%; object-fit:cover; }
-.chat-preview-name{ flex:1; font-size:.78rem; color: rgba(247,236,223,.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.chat-preview-remove{ background:none; border:none; color: rgba(255,180,168,.7); font-size:1.1rem; cursor:pointer; flex-shrink:0; }
-
-.chat-input-row{
-  flex:0 0 auto; display:flex; align-items:center; gap:8px;
-  padding: 10px 20px calc(10px + env(safe-area-inset-bottom,0px));
-  margin: 0 10px; border-radius: 0 0 20px 20px;
-  background: rgba(12,7,17,.66);
-  border-top:1px solid rgba(247,236,223,.14);
-}
-.chat-input-row input[type="text"]{
-  flex:1; padding:12px 15px; border-radius:999px; border:1px solid var(--glass-border);
-  background: var(--glass-bg); color: var(--cream); font-family: var(--font-body); font-size:.92rem;
-}
-.chat-input-row input[type="text"]::placeholder{ color: rgba(247,236,223,.4); }
-.chat-input-row input[type="text"]:focus{ outline:none; border-color: var(--accent); }
-.chat-send{ background: var(--accent); color:#ffffff; border-color:transparent; }
-.chat-send:hover{ background:#60a5fa; }
-
-/* ---------------- LIGHTBOX (opens shared photos/videos full-screen) ---------------- */
-.lightbox{
-  position:fixed; inset:0; z-index:100; background: rgba(10,6,14,.92);
-  display:none; align-items:center; justify-content:center; padding:24px;
-  backdrop-filter: blur(6px);
-}
-.lightbox.show{ display:flex; }
-.lightbox-content{ max-width:100%; max-height:100%; }
-.lightbox-content img, .lightbox-content video{ max-width:100%; max-height:88vh; border-radius:12px; display:block; margin:0 auto; }
-.lightbox-close{
-  position:absolute; top:20px; right:20px; width:42px; height:42px; border-radius:50%;
-  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; font-size:1.3rem;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-}
-
-@media (max-width:420px){
-  .page{ padding:28px 18px 24px; }
-}
+/* ===== professional PDF styling ===== */
+body{background:#3c4047}
+.pdfbar{background:#23272e;font-size:.8rem;letter-spacing:.2px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#pgInd{background:rgba(255,255,255,.12);padding:2px 10px;border-radius:999px;font-size:.72rem}
+.page{max-width:660px;border-radius:2px;box-shadow:0 8px 28px rgba(0,0,0,.5);padding:0 24px 14px;min-height:720px;font-family:Georgia,'Times New Roman',serif;color:#1f2937}
+.ph{display:flex;align-items:center;justify-content:space-between;border:0;border-bottom:1px solid #e3e6ea;padding:14px 0 9px;margin-bottom:12px;font-family:Arial,sans-serif}
+.ph .brand{font-size:.62rem;color:#555;letter-spacing:.4px}
+.ph em{font-style:normal;font-weight:800;color:#fff;background:#0b3d91;padding:2px 6px;border-radius:3px;margin-right:6px}
+.ph b{background:var(--c);color:#fff !important;padding:3px 11px;border-radius:999px;font-size:.55rem;letter-spacing:.8px;text-transform:uppercase}
+.cover{background:linear-gradient(135deg,#0b2a66,#2563eb);color:#fff;border-radius:6px;padding:22px 20px;margin:0 0 16px;font-family:Arial,sans-serif}
+.cover .big{font-size:1.4rem;font-weight:800;letter-spacing:.2px}
+.cover .sm{font-size:.66rem;opacity:.85;margin-top:6px}
+.cover .chips{display:flex;gap:6px;margin-top:12px}
+.cover .chips span{background:rgba(255,255,255,.18);border-radius:999px;padding:3px 11px;font-size:.58rem}
+.page h1{font-size:1.25rem;color:#111 !important;margin:8px 0 12px;font-family:Georgia,serif;line-height:1.25}
+.page h1::after{content:"";display:block;width:48px;height:3px;background:var(--c);margin-top:7px;border-radius:2px}
+.page h2{font-size:.62rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--c);border:0 !important;border-bottom:1px solid #e3e6ea !important;padding:0 0 4px;margin:16px 0 8px;font-family:Arial,sans-serif}
+.kp{width:100%;border-collapse:collapse;font-size:.68rem;line-height:1.45;font-family:Arial,sans-serif;border:1px solid #e5e7eb}
+.kp th{background:var(--c);color:#fff;text-align:left;padding:6px 9px;font-size:.6rem;letter-spacing:.6px;text-transform:uppercase}
+.kp td{padding:6px 9px;border-top:1px solid #e5e7eb;vertical-align:top}
+.kp td:first-child{font-weight:700;width:36%;color:#111}
+.kp tr:nth-child(even) td{background:#f8fafc}
+.tip{font-size:.66rem;line-height:1.5;background:#f6f8fc;border:0 !important;border-left:4px solid var(--c) !important;padding:8px 11px;margin:14px 0 2px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif;color:#374151}
+.ln{font-family:Arial,sans-serif;font-size:.68rem;line-height:1.55;padding:6px 0;border-bottom:1px dotted #d5d9e0}
+.ln b{color:var(--c)}
+.ln i{font-style:normal;font-weight:700;color:#0f766e}
+.fig{border:1px solid #e3e6ea;background:#fff;border-radius:6px;padding:8px 8px 6px;margin:2px 0 6px}
+.fig .cap{font-family:Arial,sans-serif;font-size:.56rem;color:#6b7280;text-align:center;font-style:italic;margin-top:3px}
+.pf{display:flex;justify-content:space-between;font-family:Arial,sans-serif;font-size:.56rem;color:#6b7280;border-top:1px solid #e3e6ea;padding-top:7px;margin-top:auto}
 </style>
 </head>
 <body>
 
-<div class="bg-decor" aria-hidden="true">
-  <span class="orb-1"></span>
-  <span class="orb-2"></span>
-  <span class="orb-3"></span>
-  <span class="orb-4"></span>
-</div>
-<div class="floating-layer" id="floatingLayer" aria-hidden="true"></div>
-<div class="identity-pill" id="identityPill"></div>
-
-<!-- LOGIN -->
-<div class="screen active" id="screen-login">
-  <div class="page">
-    <div class="glow"></div>
-    <div class="page-main">
-      <span class="mark">📘</span>
-      <h1 class="hero-title">Welcome Back</h1>
-      <p class="hero-sub">Apna daily study dashboard dekhne ke liye sign in karo</p>
-      <form id="loginForm" class="form-block" autocomplete="off">
-        <div class="field">
-          <label for="username">Username</label>
-          <input id="username" type="text" placeholder="apna username likho" required>
-        </div>
-        <div class="field">
-          <label for="password">Password</label>
-          <input id="password" type="password" placeholder="••••••••" required>
-        </div>
-        <div class="error" id="errorMsg"></div>
-        <button type="submit" class="cta">Login</button>
-      </form>
-    </div>
-    <p class="foot-note">Tumhara personal study space 📘</p>
-  </div>
+<!-- PDF (site khulte hi sirf yahi dikhega) -->
+<div class="screen active" id="screen-pdf">
+  <div class="pdfbar"><span>📄 NEET_Quick_Revision_Notes.pdf</span><span id="pgInd">Page 1 / 20</span></div>
+  <div id="pages"></div>
 </div>
 
-<!-- MENU -->
-<div class="screen" id="screen-menu">
-  <div class="page">
-    <div class="glow"></div>
-    <div class="page-top">
-      <span class="mark">🎯</span>
-      <h2 class="section-title" id="menuGreeting">Your Dashboard</h2>
-      <p class="hero-sub">ek section chuno</p>
-    </div>
-    <div class="activity-banner" id="activityBanner"></div>
-    <div class="page-main menu-list">
-      <div class="menu-item" id="btnSurprise">
-        <span class="icon-circle">📘</span>
-        <div class="txt"><h3>Daily Challenge</h3><p>aaj ka naya task complete karo</p></div>
-        <span class="chev">›</span>
-      </div>
-      <div class="menu-item" id="btnChat">
-        <span class="icon-circle">🗨️</span>
-        <div class="txt"><h3>Discussion</h3><p>apne doubts poocho, photo-video bhi bhejo</p></div>
-        <span class="chev">›</span>
-      </div>
-      <div class="menu-item" id="btnNotes">
-        <span class="icon-circle">📝</span>
-        <div class="txt"><h3>Study Notes</h3><p>important notes yahin milenge</p></div>
-        <span class="chev">›</span>
-      </div>
-      <div class="menu-item locked" id="btnCountdown">
-        <span class="icon-circle">📊</span>
-        <div class="txt"><h3>Progress Tracker</h3><p id="countdownLockNote">pehle Daily Challenge complete karo</p></div>
-        <span class="chev">›</span>
-      </div>
-    </div>
-    <p class="foot-note">Keep learning, keep growing 📘</p>
-  </div>
-</div>
-
-<!-- SURPRISE -->
-<div class="screen" id="screen-surprise">
-  <div class="page" id="surpriseStage">
-    <div class="glow"></div>
-    <div class="top-bar">
-      <button class="icon-btn" id="surpriseBackIcon" aria-label="Menu par wapas">←</button>
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <span class="slide-count" id="slideCount">1/22</span>
-    </div>
-    <div class="page-main">
-      <div class="slide-wrap">
-        <span class="slide-quote">"</span>
-        <h2 class="slide-title" id="slideText">Slide text</h2>
-      </div>
-    </div>
-    <div class="page-bottom">
-      <button class="cta" id="nextBtn">Aage</button>
-      <div class="btn-row" id="finalBtnRow" style="display:none;">
-        <button class="cta" id="yesBtn">Haan 💛</button>
-        <button class="cta ghost" id="noBtn">Nahi</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CELEBRATE (brief, then auto -> countdown) -->
-<div class="screen" id="screen-celebrate">
-  <div class="page celebrate-page">
-    <div class="glow"></div>
-    <div class="hearts-burst" id="heartsBurst"></div>
-    <h2 class="hero-title">Yayy! 🎉</h2>
-    <p class="hero-sub" id="celebrateText" style="margin-left:auto;margin-right:auto;">Usne haan bol diya!</p>
-    <button class="cta ghost small" id="celebrateContinue" style="margin:22px auto 0;">Aage Badho →</button>
-  </div>
-</div>
-
-<!-- PROGRESS TRACKER -->
-<div class="screen" id="screen-countdown">
-  <div class="page">
-    <div class="top-bar">
-      <button class="icon-btn" id="countdownBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Progress Tracker</h2>
-      <span class="icon-btn spacer" aria-hidden="true">←</span>
-    </div>
-    <div class="page-main countdown-main">
-      <div class="story-hero">
-        <p class="cap">seekhna shuru kiye kitna time ho gaya</p>
-        <div class="stat-grid" id="togetherNums"></div>
-        <p class="cap since">3 July 2025 se</p>
-      </div>
-
-      <div class="counter-card">
-        <h3>Important Dates</h3>
-        <div class="dates-list" id="datesList"></div>
-        <form class="add-date-form" id="addDateForm">
-          <div class="tag-picker" id="tagPicker">
-            <button type="button" data-tag="📝" class="active" aria-label="Assignment">📝</button>
-            <button type="button" data-tag="📅" aria-label="Exam">📅</button>
-            <button type="button" data-tag="⏰" aria-label="Reminder">⏰</button>
-            <button type="button" data-tag="🎯" aria-label="Goal">🎯</button>
-          </div>
-          <input type="text" id="dateLabel" placeholder="Is date ko naam do (e.g. Exam Date)" required>
-          <input type="datetime-local" id="dateValue" required>
-          <button type="submit" class="cta small">+ Date Add Karo</button>
-        </form>
-      </div>
-
-      <p class="status-note" id="syncNote"></p>
-    </div>
-  </div>
+<!-- PASSWORD -->
+<div class="modal" id="pwModal">
+  <form class="box" id="pwForm" autocomplete="off">
+    <h3>🔒 Enter Password</h3>
+    <input id="uname" type="text" placeholder="Apna naam (e.g. Praveen)" required>
+    <input id="pass" type="password" placeholder="Password" required>
+    <div class="err" id="pwErr"></div>
+    <div class="row"><button type="button" class="btn g" id="pwCancel">Cancel</button><button type="submit" class="btn">Open</button></div>
+  </form>
 </div>
 
 <!-- CHAT -->
 <div class="screen" id="screen-chat">
-  <div class="page chat-page">
-    <div class="top-bar">
-      <button class="icon-btn" id="chatBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Discussion</h2>
-      <button class="icon-btn" id="chatDeleteAllIcon" aria-label="Poori chat delete karo">🗑️</button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-preview" id="chatPreview" style="display:none;">
-      <div class="chat-preview-thumb" id="chatPreviewThumb"></div>
-      <span class="chat-preview-name" id="chatPreviewName"></span>
-      <button type="button" class="chat-preview-remove" id="chatPreviewRemove">×</button>
-    </div>
-    <form class="chat-input-row" id="chatForm">
-      <button type="button" class="icon-btn" id="chatAttachBtn" aria-label="Photo/video bhejo">📎</button>
-      <input type="file" id="chatFile" accept="image/*,video/*" style="display:none;">
-      <input type="text" id="chatText" placeholder="Kuch likho..." autocomplete="off">
-      <button type="submit" class="icon-btn chat-send" id="chatSendBtn" aria-label="Bhejo">➤</button>
-    </form>
+  <div class="top">
+    <button class="ib" id="chatBack" aria-label="Back">←</button>
+    <h2>Discussion</h2>
+    <button class="ib" id="chatDelAll" aria-label="Delete chat">🗑️</button>
   </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="prev" id="prev"><div class="th" id="prevTh"></div><span class="nm" id="prevNm"></span><button type="button" id="prevRm">×</button></div>
+  <form class="inrow" id="chatForm">
+    <button type="button" class="ib" id="attach" aria-label="Attach">📎</button>
+    <input type="file" id="file" accept="image/*,video/*" style="display:none">
+    <input type="text" id="txt" placeholder="Kuch likho..." autocomplete="off">
+    <button type="submit" class="ib send" id="sendBtn" aria-label="Send">➤</button>
+  </form>
 </div>
 
-<!-- STUDY NOTES -->
-<div class="screen" id="screen-notes">
-  <div class="page">
-    <div class="top-bar">
-      <button class="icon-btn" id="notesBackIcon" aria-label="Menu par wapas">←</button>
-      <h2 class="top-title">Study Notes</h2>
-      <span class="icon-btn spacer" aria-hidden="true">←</span>
-    </div>
-    <div class="page-main" style="text-align:center;">
-      <span class="mark" style="margin:0 auto 20px;">📝</span>
-      <p class="hero-sub" style="margin-left:auto;margin-right:auto;margin-bottom:20px;">jab bhi thoda motivation chahiye, ek note padh lo</p>
-      <div class="note-card" id="noteCard">Loading...</div>
-      <button class="cta ghost small" id="noteShuffle" style="margin:20px auto 0;">Next Note</button>
-    </div>
-  </div>
-</div>
-
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightboxClose" aria-label="Band karo">×</button>
-  <div class="lightbox-content" id="lightboxContent"></div>
-</div>
+<div class="lb" id="lb"><button id="lbClose">×</button><div id="lbC"></div></div>
 
 <script>
-/* ============================================================
-   SUPABASE CONFIG
-   ============================================================ */
+/* ---------- SUPABASE ---------- */
 const SUPABASE_URL = "https://dylxhznrgcuozinnmmjl.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_ASSqgdfO_upJDsDquGJH9A_hxWdOPOP";
-
 let sb = null;
-try {
-  if (SUPABASE_URL !== "YOUR_SUPABASE_PROJECT_URL") {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-} catch (e) { console.error("Supabase init failed", e); }
-
+try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ console.error(e); }
 const FIXED_PASSWORD = "kritikapraveen";
-const TOGETHER_SINCE = new Date("2025-07-03T00:00:00");
-
-/* 22 slides — apni marzi se edit karo */
-const slides = [
-  "Suno, mujhe tumse kuch kehna hai.",
-  "Koi badi ya darawani baat nahi hai, chinta mat karo.",
-  "Bas ek chhoti si baat hai, jo dil me kaafi time se hai.",
-  "Jabse tum meri zindagi me aayi ho, sab kuch thoda zyada roshan lagta hai.",
-  "Subah ki pehli soch tum hoti ho, raat ki aakhri bhi.",
-  "Tumhare saath sadharan pal bhi yaadgar ban jaate hain.",
-  "Tumhara hasna mujhe sabse achha lagta hai is duniya me.",
-  "Jab tum udaas hoti ho, mera bhi mann udaas ho jaata hai.",
-  "Tumhare saath baat karke lagta hai jaise saara bojh halka ho gaya.",
-  "Chhoti chhoti baatein, lambi calls, wo sab kuch mujhe pyara hai.",
-  "Maine kabhi socha nahi tha koi itni asaani se dil me utar jayega.",
-  "Par tumne kar dikhaya.",
-  "Har jhagda, har masti, har chup — sab kuch is rishte ko aur khaas banata hai.",
-  "Mujhe tumhare saath ka har waqt sambhal ke rakhna hai.",
-  "Tumhari fikar karna, tumhara khayal rakhna — ye mujhe accha lagta hai.",
-  "Maine ye poori website sirf isliye banayi hai ki tumhe sahi tarike se ye baat bata sakoon.",
-  "Kyunki tum is baat ki hakdaar ho ki tumhe pyar se bataya jaye, seedhe seedhe nahi.",
-  "Bas thoda aur padhna hai, mere saath raho.",
-  "Ab ghuma-phira kar nahi, seedha bol deta hoon.",
-  "Mujhe tum sach mein bahut pasand ho — jitna maine kaha hai usse kahin zyada.",
-  "Main chahta hoon ye jo bhi hai, aage bhi chalta rahe.",
-  "Toh yahi sawaal hai... kya tum meri banoge?"
-];
-
-/* Love notes — chhote chhote pyar bhare messages, koi bhi tab dekh sakti hai */
-const loveNotes = [
-  "Tumhara muskurana mera sabse pasandida pal hai.",
-  "Jitni baar tumse baat karta hoon, utni baar naya reason mil jaata hai tumse pyar karne ka.",
-  "Tum jaisi ho, waisi hi rehna — bas thodi meri taraf zyada aana.",
-  "Har mushkil din ke baad, tumse baat karke sab theek lagta hai.",
-  "Tum meri favourite good morning aur favourite good night dono ho.",
-  "Chhoti chhoti baatein bhi tumhare saath badi lagti hain.",
-  "Kabhi self-doubt ho toh yaad rakhna — main tumhare saath hoon.",
-  "Tumhara hone bhar se din behtar ho jaata hai.",
-  "Main tumhare saath sabse zyada khud jaisa mehsoos karta hoon.",
-  "Tumhari hansi meri favourite sound hai is duniya mein.",
-  "Jitna sochta hoon utna keh nahi paata — bas itna jaan lo, tum khaas ho.",
-  "Tumhare saath rehna mujhe aasaan lagta hai, complicated nahi.",
-  "Tum meri zindagi ka sabse accha decision lagti ho.",
-  "Chahe kuch bhi ho jaye, tumhara haath nahi chhodunga.",
-  "Aaj bhi, kal bhi, hamesha — sirf tum."
-];
-
-/* ---------------- AMBIENT BACKGROUND (fills the whole page, not just the middle) ---------------- */
-(function spawnFloatingLayer(){
-  const layer = document.getElementById('floatingLayer');
-  if(!layer) return;
-  const glyphs = ['📘','✏️','⭐','📐'];
-  const count = window.innerWidth < 640 ? 9 : 16;
-  for(let i=0;i<count;i++){
-    const span = document.createElement('span');
-    span.textContent = glyphs[i % glyphs.length];
-    span.style.setProperty('--x', (Math.random()*94 + 2) + '%');
-    span.style.setProperty('--sz', (0.85 + Math.random()*0.9).toFixed(2) + 'rem');
-    span.style.setProperty('--dur', (18 + Math.random()*16).toFixed(1) + 's');
-    span.style.setProperty('--delay', (Math.random()*-30).toFixed(1) + 's');
-    span.style.setProperty('--drift', (Math.random()*60 - 30).toFixed(0) + 'px');
-    layer.appendChild(span);
-  }
-})();
-
-/* ---------------- SCREEN SWITCH ---------------- */
-const screens = {
-  login: document.getElementById('screen-login'),
-  menu: document.getElementById('screen-menu'),
-  surprise: document.getElementById('screen-surprise'),
-  celebrate: document.getElementById('screen-celebrate'),
-  countdown: document.getElementById('screen-countdown'),
-  notes: document.getElementById('screen-notes'),
-  chat: document.getElementById('screen-chat')
-};
-function showScreen(name){
-  Object.values(screens).forEach(s => s.classList.remove('active'));
-  screens[name].classList.add('active');
-  window.scrollTo(0,0);
-  if(name === 'menu') refreshActivityBanner();
-  if(name === 'chat'){ openChat(); } else { closeChat(); }
-}
-
+const BUCKET = 'chat-media';
 let identity = localStorage.getItem('kk_identity') || '';
-let surpriseUnlocked = false;
 
-function updateIdentityBadge(){
-  const pill = document.getElementById('identityPill');
-  if(identity){
-    pill.textContent = identity;
-    pill.classList.add('show');
-  } else {
-    pill.classList.remove('show');
+/* ---------- NEET CONTENT: topic-wise (## Subject|Title, then Term::Definition) ---------- */
+const TOPICS = `## General|NEET Exam Pattern & Strategy
+Total marks::720 (180 questions)
+Marking scheme::+4 for correct, −1 for wrong
+Subjects::Physics, Chemistry, Botany, Zoology
+Exam duration::3 hours 20 minutes
+Mode of exam::pen-and-paper (OMR sheet)
+Most important book::NCERT (Class 11 and 12)
+Biology weightage::50% of total marks
+Unanswered question::no marks and no negative marking
+## Physics|Ray Optics
+Snell's law::n1 sinθ1 = n2 sinθ2
+Power of a lens::1/f (f in metres), unit dioptre
+Total internal reflection::light moving denser to rarer beyond critical angle
+Focal length of a plane mirror::infinite
+Mirror formula::1/v + 1/u = 1/f
+Lens maker's formula::1/f = (n − 1)(1/R1 − 1/R2)
+Magnification of a lens::m = v/u
+Speed of light in vacuum::3 × 10⁸ m/s
+## Physics|Current Electricity
+Ohm's law::V = IR
+SI unit of resistance::ohm (Ω)
+Resistors in series::R = R1 + R2
+Resistors in parallel::1/R = 1/R1 + 1/R2
+Electric power::P = VI = I²R
+Kirchhoff's current law::sum of currents at a junction is zero
+Kirchhoff's voltage law::sum of potential changes in a closed loop is zero
+Drift velocity::average velocity of electrons under an electric field
+## Physics|Oscillations & Waves
+Simple harmonic motion::acceleration proportional to displacement and opposite to it
+Time period of simple pendulum::2π√(l/g)
+Time period of spring-mass system::2π√(m/k)
+Total energy in SHM::½kA²
+Doppler effect::apparent change in frequency due to relative motion
+Speed of sound in air::about 332 m/s at 0°C
+Wave speed::v = fλ
+SI unit of frequency::hertz (Hz)
+## Physics|Atoms & Nuclei
+Bohr radius::0.529 Å
+Ground state energy of hydrogen::−13.6 eV
+Alpha particle::helium nucleus
+Half-life::time for half the nuclei to decay
+Binding energy::energy needed to separate a nucleus into nucleons
+Gamma rays::high-energy electromagnetic radiation with no charge
+de Broglie wavelength::λ = h/p
+Photoelectric equation::KEmax = hν − φ
+## Physics|Thermodynamics
+First law of thermodynamics::ΔQ = ΔU + W
+Carnot engine efficiency::1 − T2/T1
+Isothermal process::temperature stays constant
+Adiabatic process::no heat exchange with surroundings
+Isochoric process::volume stays constant, so W = 0
+Kelvin–Planck statement::no engine can convert heat completely into work
+Specific heat::heat needed to raise 1 kg by 1 K
+Entropy::measure of disorder, increases in an isolated system
+## Physics|EM Waves & Semiconductors
+Speed of EM waves::c = 1/√(μ₀ε₀)
+Gamma rays::shortest wavelength in the EM spectrum
+Radio waves::longest wavelength in the EM spectrum
+Ultraviolet rays::absorbed by the ozone layer
+Infrared rays::also called heat waves
+n-type semiconductor::doped with pentavalent impurity
+p-type semiconductor::doped with trivalent impurity
+Zener diode::used as a voltage regulator
+## Chemistry|Periodic Table & Trends
+Most electronegative element::fluorine
+Atomic size::decreases across a period, increases down a group
+Ionisation energy::increases across a period, decreases down a group
+Lanthanoid contraction::gradual decrease in size across the 4f series
+Noble gases::group 18, completely filled valence shell
+Alkali metals::group 1, most reactive metals
+Halogens::group 17, most reactive non-metals
+Isoelectronic species::same number of electrons
+## Chemistry|Chemical Bonding
+Hybridisation of methane::sp³
+Hybridisation of ethene::sp²
+Hybridisation of ethyne::sp
+Shape of SF6::octahedral
+Bond order::(bonding − antibonding electrons) / 2
+Pauli exclusion principle::no two electrons share the same four quantum numbers
+Hund's rule::pairing starts only after each orbital has one electron
+Aufbau principle::orbitals fill in increasing order of energy
+## Chemistry|Organic Chemistry – Reagents & Reactions
+Markovnikov's rule::hydrogen adds to the carbon with more hydrogens
+Cannizzaro reaction::aldehydes without α-hydrogen disproportionate in strong base
+Aldol condensation::aldehydes or ketones with α-hydrogen in dilute base
+Lucas test::distinguishes 1°, 2° and 3° alcohols
+Tollens' reagent::gives silver mirror with aldehydes
+Fehling's solution::tests for aliphatic aldehydes
+Chirality::molecule not superimposable on its mirror image
+Bakelite::polymer of phenol and formaldehyde
+Nylon-6,6::polymer of hexamethylenediamine and adipic acid
+## Biology|Cell – Structure & Function
+Powerhouse of the cell::mitochondria
+Site of protein synthesis::ribosome
+Site of photosynthesis::chloroplast
+Fluid mosaic model::proposed by Singer and Nicolson
+Cell theory::proposed by Schleiden and Schwann
+Suicidal bags of the cell::lysosomes
+Golgi apparatus::packaging and secretion of proteins
+Plant cell wall::made of cellulose
+## Biology|Molecular Basis of Inheritance
+DNA double helix::proposed by Watson and Crick
+Chargaff's rule::A = T and G = C
+Okazaki fragments::formed on the lagging strand
+Semi-conservative replication::proved by Meselson and Stahl
+Griffith's experiment::transformation in Streptococcus pneumoniae
+Hershey–Chase experiment::proved DNA is the genetic material
+Nucleosome::DNA wrapped around a histone octamer
+Lac operon::inducible operon in E. coli
+## Biology|Cell Cycle & Cell Division
+Mitosis::equational division, chromosome number unchanged
+Meiosis::reductional division, chromosome number halved
+Crossing over::occurs in pachytene of prophase I
+Interphase::consists of G1, S and G2 phases
+S phase::DNA replication
+Metaphase::chromosomes align at the equator
+Anaphase::sister chromatids separate
+Cytokinesis::division of the cytoplasm
+## Biology|Gene Expression & Biotechnology
+Central dogma::DNA → RNA → protein
+Start codon::AUG
+Stop codons::UAA, UAG, UGA
+Genetic code::triplet, degenerate and universal
+PCR::amplifies DNA using Taq polymerase
+Restriction enzymes::molecular scissors cutting DNA at specific sites
+Bt cotton::resistant to bollworm
+Reverse transcriptase::makes DNA from RNA
+## Biology|Human Circulation
+SA node::pacemaker of the heart
+Normal blood pressure::120/80 mm Hg
+Haemoglobin::oxygen carrying pigment in RBCs
+Normal heart rate::about 72 beats per minute
+Cardiac output::stroke volume × heart rate
+Systole::contraction of the heart chambers
+Diastole::relaxation of the heart chambers
+Left atrioventricular valve::bicuspid (mitral) valve
+## Biology|Excretory Products & Elimination
+Nephron::functional unit of kidney
+ADH::increases water reabsorption in the kidney
+Glomerular filtration rate::about 125 mL/min
+Loop of Henle::creates the concentration gradient in the medulla
+Main nitrogenous waste in humans::urea
+Aldosterone::promotes sodium reabsorption
+Ultrafiltration::occurs in the glomerulus
+Micturition::release of urine from the bladder
+## Biology|Sexual Reproduction in Flowering Plants
+Double fertilisation::unique to angiosperms
+Endosperm::triploid tissue in angiosperm seeds
+Pollen grain::male gametophyte
+Embryo sac::female gametophyte, 7-celled and 8-nucleate
+Anther::site of pollen formation
+Stigma::receives the pollen
+Ovary::develops into the fruit
+Ovule::develops into the seed
+## Biology|Ecosystem & Environment
+Ten percent law::given by Lindeman
+Pyramid of energy::always upright
+Primary productivity::rate of biomass production by producers
+Eutrophication::nutrient enrichment of water bodies
+Ozone layer::absorbs harmful UV-B radiation
+Biodiversity hotspot::region with high endemism and habitat loss
+Decomposers::bacteria and fungi
+Detritus food chain::begins with dead organic matter
+## Biology|Human Reproduction
+Menstrual cycle length::about 28 days
+Ovulation::triggered by the LH surge
+Corpus luteum::secretes progesterone
+hCG::hormone detected in pregnancy tests
+Copper-T::intrauterine contraceptive device
+Spermatogenesis::occurs in the seminiferous tubules
+Fertilisation::occurs in the ampulla of the fallopian tube
+Implantation::embedding of the blastocyst in the endometrium
+## Biology|Principles of Inheritance
+Law of segregation::alleles separate during gamete formation
+Test cross::cross with a homozygous recessive parent
+Down syndrome::trisomy 21
+Turner syndrome::XO
+Klinefelter syndrome::XXY
+Haemophilia::X-linked recessive disorder
+Sickle cell anaemia::point mutation in the β-globin gene
+Hardy-Weinberg principle::p² + 2pq + q² = 1`;
+const TIPS = {
+  General:'Tip: Solve previous year papers in a timed OMR format at least once a week.',
+  Physics:'Tip: Always check units and powers of ten before marking an option.',
+  Chemistry:'Tip: Learn NCERT exceptions and named reactions — they repeat every year.',
+  Biology:'Tip: Read NCERT line by line; most Biology questions come straight from it.'
+};
+const COL = {General:'#7c3aed', Physics:'#2563eb', Chemistry:'#d97706', Biology:'#16a34a'};
+
+const PAGES = 20, SECRET_PAGE = 10;
+
+/* ---------- DIAGRAMS (inline SVG) ---------- */
+const T = (x,y,s,a='middle',st='') => `<text x="${x}" y="${y}" text-anchor="${a}" style="${st}">${s}</text>`;
+const L = (x1,y1,x2,y2,ex='') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${ex}/>`;
+function dna(){
+  let a='', b='', r='';
+  for(let x=20;x<=280;x+=5){ const y=65-30*Math.sin(Math.PI*(x-20)/65); a+=x+','+y+' '; b+=x+','+(130-y)+' '; }
+  for(let x=25;x<=275;x+=10){ const y=65-30*Math.sin(Math.PI*(x-20)/65); r+=L(x,y,x,130-y,'stroke="#999" stroke-width="1"'); }
+  return r+`<polyline points="${a}"/><polyline points="${b}" stroke="#e67e22"/>`;
+}
+const EMc = ['#8e44ad','#c0392b','#e67e22','#2e9e5b','#3b82f6','#16a085','#34495e'];
+const EMn = ['Radio','Micro','IR','Visible','UV','X-ray','γ-ray'];
+const D = [
+["NEET marks distribution (720 total)", `<path d="M70 20A50 50 0 0 0 70 120L70 70Z" fill="#2e9e5b"/><path d="M70 20A50 50 0 0 1 120 70L70 70Z" fill="#3b82f6"/><path d="M120 70A50 50 0 0 1 70 120L70 70Z" fill="#e67e22"/>${T(150,45,'Biology – 360 (Botany+Zoology)','start')}${T(150,70,'Physics – 180','start')}${T(150,95,'Chemistry – 180','start')}`],
+["Convex lens – object beyond 2F", `${L(10,65,290,65)}<ellipse cx="150" cy="65" rx="6" ry="50"/>${L(60,65,60,35)}${L(60,35,150,35)}${L(150,35,240,95)}${L(60,35,150,65)}${L(150,65,240,95)}${L(240,65,240,95)}${T(110,80,'F')}${T(190,80,'F')}${T(60,80,'Object')}${T(225,115,'Real, inverted image')}`],
+["Simple circuit – Ohm's law (V = IR)", `<path d="M40 100V30H100l10-8 10 16 10-16 10 16 10-8H260V100H40Z"/>${L(30,60,50,60,'stroke-width="3"')}${L(35,70,45,70,'stroke-width="3"')}${T(60,68,'Cell (V)','start')}${T(150,18,'R')}${T(150,118,'Current I →')}`],
+["Simple harmonic motion – displacement graph", `${L(10,65,290,65)}<path d="M10 65C40 5 70 5 100 65S160 125 190 65 250 5 280 65"/>${T(45,18,'+A')}${T(145,124,'–A')}${T(150,12,'x = A sin(ωt),  T = 2π/ω')}`],
+["Bohr model of the atom", `<circle cx="150" cy="65" r="10" fill="#c0392b"/><circle cx="150" cy="65" r="28"/><circle cx="150" cy="65" r="45"/><circle cx="150" cy="65" r="60"/><circle cx="178" cy="65" r="4" fill="#3b82f6"/><circle cx="150" cy="20" r="4" fill="#3b82f6"/><circle cx="102" cy="100" r="4" fill="#3b82f6"/>${T(20,45,'rn ∝ n²','start')}${T(20,65,'En = –13.6/n² eV','start')}${T(20,85,'L = nh/2π','start')}`],
+["Carnot cycle – P–V diagram", `${L(40,112,40,15)}${L(40,112,260,112)}<path d="M70 35Q110 45 150 60Q175 80 195 105Q150 95 105 85Q80 65 70 35Z"/>${T(62,32,'A')}${T(158,58,'B')}${T(203,108,'C')}${T(95,97,'D')}${T(28,20,'P')}${T(255,124,'V')}${T(215,40,'AB Isothermal','start')}${T(215,55,'BC Adiabatic','start')}${T(215,70,'CD Isothermal','start')}${T(215,85,'DA Adiabatic','start')}`],
+["Electromagnetic spectrum", EMn.map((n,i)=>`<rect x="${10+i*40}" y="40" width="40" height="30" fill="${EMc[i]}"/>`+T(30+i*40,88,n)).join('')+T(150,22,'Wavelength decreases →  Frequency increases →')],
+["Periodic trends", `<rect x="30" y="25" width="240" height="85"/>${T(150,50,'Across a period (L → R):')}${T(150,65,'size ↓   IE ↑   EN ↑   metallic ↓')}${T(150,87,'Down a group (top → bottom):')}${T(150,102,'size ↑   IE ↓   EN ↓   metallic ↑')}`],
+["Hybridisation and molecular geometry", `${L(15,65,75,65)}<circle cx="45" cy="65" r="4" fill="#0b3d91"/>${T(45,102,'sp')}${T(45,114,'linear 180°')}${L(150,65,150,25)}${L(150,65,115,87)}${L(150,65,185,87)}<circle cx="150" cy="65" r="4" fill="#0b3d91"/>${T(150,102,'sp²')}${T(150,114,'planar 120°')}${L(255,65,255,22)}${L(255,65,222,90)}${L(255,65,288,90)}${L(255,65,275,50,'stroke-dasharray="3"')}<circle cx="255" cy="65" r="4" fill="#0b3d91"/>${T(255,102,'sp³')}${T(255,114,'tetrahedral 109.5°')}`],
+["Animal cell – main organelles", `<ellipse cx="150" cy="65" rx="115" ry="58"/><circle cx="150" cy="55" r="22" fill="#cfe2ff"/><circle cx="150" cy="55" r="5" fill="#0b3d91"/><ellipse cx="85" cy="45" rx="15" ry="7" fill="#fadbd8"/><path d="M205 40Q220 35 235 40M207 48Q220 43 233 48M209 56Q220 51 231 56"/>${T(150,92,'Nucleus')}${T(85,66,'Mitochondria')}${T(220,72,'Golgi')}${T(150,125,'Plasma membrane')}`],
+["DNA double helix", dna()+T(150,12,'A = T (2 H-bonds),  G ≡ C (3 H-bonds)')],
+["Cell cycle", `<circle cx="70" cy="65" r="45"/>${L(25,65,115,65)}${L(70,20,70,110)}${T(48,48,'G1')}${T(93,48,'S')}${T(93,88,'G2')}${T(48,88,'M')}${T(135,35,'G1 – cell growth','start')}${T(135,58,'S – DNA replication','start')}${T(135,81,'G2 – prepares for mitosis','start')}${T(135,104,'M – mitosis + cytokinesis','start')}`],
+["Central dogma of molecular biology", `<rect x="20" y="50" width="60" height="30"/><rect x="120" y="50" width="60" height="30"/><rect x="220" y="50" width="60" height="30"/>${T(50,69,'DNA')}${T(150,69,'RNA')}${T(250,69,'Protein')}${L(80,65,120,65)}${L(180,65,220,65)}${T(100,44,'Transcription')}${T(200,44,'Translation')}<path d="M30 50C30 22 70 22 70 50"/>${T(50,16,'Replication')}${T(150,110,'Reverse transcription: RNA → DNA (retrovirus)')}`],
+["Human heart – four chambers", `<rect x="100" y="30" width="50" height="35"/><rect x="150" y="30" width="50" height="35"/><rect x="100" y="65" width="50" height="40"/><rect x="150" y="65" width="50" height="40"/>${T(125,52,'RA')}${T(175,52,'LA')}${T(125,88,'RV')}${T(175,88,'LV')}${T(95,45,'Vena cava','end')}${T(95,88,'Pulm. artery','end')}${T(205,45,'Pulm. vein','start')}${T(205,88,'Aorta','start')}${T(150,18,'Double circulation')}`],
+["Nephron – functional unit of kidney", `<circle cx="40" cy="50" r="16"/>${T(40,53,'Gl.')}${T(40,80,"Bowman's")}<path d="M56 50Q75 30 95 55T135 55"/><path d="M135 55V105H165V55"/><path d="M165 55Q185 35 205 55"/><path d="M205 55H235V115"/>${T(95,28,'PCT')}${T(150,120,'Loop of Henle')}${T(190,30,'DCT')}${T(262,95,'Collecting')}${T(262,107,'duct')}`],
+["Flower – longitudinal section", `${L(150,125,150,70)}<ellipse cx="150" cy="70" rx="20" ry="6"/><ellipse cx="150" cy="55" rx="12" ry="16"/>${L(150,39,150,22)}<circle cx="150" cy="18" r="4"/>${L(125,64,115,35)}<ellipse cx="115" cy="32" rx="5" ry="7"/>${L(175,64,185,35)}<ellipse cx="185" cy="32" rx="5" ry="7"/><path d="M130 68Q95 60 90 30Q115 45 135 60M170 68Q205 60 210 30Q185 45 165 60M133 74Q110 80 100 95"/>${T(205,18,'Stigma','start')}${T(225,58,'Ovary','start')}${T(205,100,'Receptacle','start')}${T(80,20,'Anther','end')}${T(75,50,'Petal','end')}${T(95,105,'Sepal','end')}`],
+["Ecological pyramid of energy", [['Producers',200,'#2e9e5b'],['Primary consumers',150,'#8bc34a'],['Secondary consumers',100,'#f1c40f'],['Tertiary',50,'#e67e22']].map((r,i)=>`<rect x="${150-r[1]/2}" y="${95-i*25}" width="${r[1]}" height="25" fill="${r[2]}"/>`+T(150,111-i*25,r[0])).join('')+T(150,12,'Only ~10% energy passes to next level (Lindeman)')],
+["Menstrual cycle – hormone levels", `${L(30,110,280,110)}${L(30,110,30,22)}<path d="M30 100L100 98Q112 28 124 98L280 100" stroke="#e74c3c"/><path d="M30 95Q100 40 120 42Q135 90 150 85Q190 55 230 90L280 100" stroke="#3b82f6"/><path d="M30 105L130 104Q200 45 230 70L260 105" stroke="#2e9e5b"/>${T(40,14,'LH','start','fill:#e74c3c')}${T(80,14,'Estrogen','start','fill:#3b82f6')}${T(150,14,'Progesterone','start','fill:#2e9e5b')}${T(124,124,'Day 14 (ovulation)')}${T(280,124,'28','end')}`],
+["Monohybrid cross – Punnett square", `<rect x="100" y="30" width="120" height="80"/>${L(160,30,160,110)}${L(100,70,220,70)}${T(130,25,'T')}${T(190,25,'t')}${T(92,54,'T','end')}${T(92,94,'t','end')}${T(130,55,'TT')}${T(190,55,'Tt')}${T(130,95,'Tt')}${T(190,95,'tt')}${T(150,124,'Tt × Tt → 3 : 1 phenotype,  1 : 2 : 1 genotype')}`]
+];
+
+/* ---------- BUILD PDF ---------- */
+const pagesEl = document.getElementById('pages');
+let di = 0, secretRow = null;
+TOPICS.split('## ').filter(Boolean).forEach((blk, idx) => {
+  const rows = blk.trim().split('\n');
+  const [subj, title] = rows.shift().split('|');
+  const facts = rows.map(r => r.split('::'));
+  const p = idx + 1, col = COL[subj];
+  const pg = document.createElement('div');
+  pg.className = 'page'; pg.style.setProperty('--c', col);
+  pg.insertAdjacentHTML('beforeend', `<div class="ph"><span class="brand"><em>NEET</em> Quick Revision Notes</span><b>${subj}</b></div>`);
+  if(p === 1) pg.insertAdjacentHTML('beforeend', `<div class=\"cover\"><div class=\"big\">NEET Quick Revision Notes</div><div class=\"sm\">NCERT-based facts • exam diagrams • practice questions</div><div class=\"chips\"><span>Physics</span><span>Chemistry</span><span>Biology</span></div></div>`);
+  pg.insertAdjacentHTML('beforeend', `<h1 style="color:${col}">${p}. ${title}</h1>`);
+  if(p !== SECRET_PAGE){
+    const [t, s] = D[di++];
+    pg.insertAdjacentHTML('beforeend', `<div class="fig"><svg viewBox="0 0 300 130" stroke="#0b3d91" fill="none" stroke-width="1.5">${s}</svg><div class="cap">Fig. ${p}: ${t}</div></div>`);
   }
+  const addRow = html => { const r = document.createElement('div'); r.className = 'ln'; r.innerHTML = html; pg.appendChild(r); return r; };
+  pg.insertAdjacentHTML('beforeend', `<h2>Key Points</h2>`);
+  pg.insertAdjacentHTML('beforeend', `<table class="kp"><tr><th>Concept</th><th>Key fact</th></tr>${facts.map(([t, d]) => `<tr><td>${t}</td><td>${d}</td></tr>`).join('')}</table>`);
+  pg.insertAdjacentHTML('beforeend', `<div class="tip">★ ${TIPS[subj]}</div>`);
+  pg.insertAdjacentHTML('beforeend', `<h2>Quick Q&amp;A — Test Yourself</h2>`);
+  let last = null;
+  facts.forEach(([t, d], i) => {
+    last = i % 2 === 0
+      ? addRow(`<b>Q.</b> ${t}? <i>Ans:</i> ${d}`)
+      : addRow(`<b>Q.</b> Which one: ${d}? <i>Ans:</i> ${t}`);
+  });
+  if(p === SECRET_PAGE) secretRow = last;   // 10th page ki aakhri line
+  pg.insertAdjacentHTML('beforeend', `<div class="pf"><span>NEET Quick Revision Notes</span><span>Page ${p} of ${PAGES}</span></div>`);
+  pagesEl.appendChild(pg);
+});
+
+function attachLongPress(el, cb){
+  let timer = null, sx = 0, sy = 0;
+  const start = (x, y) => { clearTimeout(timer); sx = x; sy = y; timer = setTimeout(() => { timer = null; cb(); }, 2500); };
+  const move = (x, y) => { if(timer && (Math.abs(x - sx) > 15 || Math.abs(y - sy) > 15)){ clearTimeout(timer); timer = null; } };
+  const cancel = () => { clearTimeout(timer); timer = null; };
+  // touch (mobile)
+  el.addEventListener('touchstart', e => { const t = e.touches[0]; start(t.clientX, t.clientY); }, {passive:true});
+  el.addEventListener('touchmove', e => { const t = e.touches[0]; move(t.clientX, t.clientY); }, {passive:true});
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchcancel', cancel);
+  // mouse (desktop)
+  el.addEventListener('mousedown', e => start(e.clientX, e.clientY));
+  el.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
 }
 
-function timeAgo(iso){
-  const diff = Math.max(0, (Date.now() - new Date(iso).getTime())/1000);
-  if(diff < 60) return 'abhi abhi';
-  if(diff < 3600) return Math.floor(diff/60) + ' minute pehle';
-  if(diff < 86400) return Math.floor(diff/3600) + ' ghante pehle';
-  return Math.floor(diff/86400) + ' din pehle';
+if(secretRow){ secretRow.style.padding = '12px 0'; attachLongPress(secretRow, openPassword); secretRow.addEventListener('contextmenu', e => e.preventDefault()); }
+
+window.addEventListener('scroll', () => {
+  if(!scr.pdf.classList.contains('active')) return;
+  const pgs = document.querySelectorAll('.page'); let cur = 1;
+  pgs.forEach((el, i) => { if(el.getBoundingClientRect().top < window.innerHeight * 0.5) cur = i + 1; });
+  document.getElementById('pgInd').textContent = 'Page ' + cur + ' / ' + PAGES;
+}, {passive:true});
+
+/* ---------- SCREENS ---------- */
+const scr = { pdf: document.getElementById('screen-pdf'), chat: document.getElementById('screen-chat') };
+function show(name){
+  Object.values(scr).forEach(s => s.classList.remove('active'));
+  scr[name].classList.add('active');
+  if(name === 'chat'){ openChat(); } else { closeChat(); window.scrollTo(0, document.body.scrollHeight); }
 }
 
-/* best-effort presence ping — safe no-op if the optional last_seen_by/last_seen_at columns don't exist yet */
-async function pingLastSeen(){
-  if(!sb || !identity) return;
-  const { error } = await sb.from('app_state').update({ last_seen_by: identity, last_seen_at: new Date().toISOString() }).eq('id','main');
-  if(error) console.warn('presence sync skipped (optional column missing):', error.message);
+/* ---------- PASSWORD ---------- */
+const pwModal = document.getElementById('pwModal');
+function openPassword(){
+  document.getElementById('uname').value = identity;
+  document.getElementById('pass').value = '';
+  document.getElementById('pwErr').textContent = '';
+  pwModal.classList.add('show');
 }
-
-/* shows what the OTHER person has done, so activity is visible to both of you */
-async function refreshActivityBanner(){
-  const el = document.getElementById('activityBanner');
-  if(!el) return;
-  if(!sb || !identity){ el.classList.remove('show'); return; }
-  const { data, error } = await sb.from('app_state').select('*').eq('id','main').maybeSingle();
-  if(error || !data){ el.classList.remove('show'); return; }
-  const msgs = [];
-  if(data.surprise_unlocked && data.surprise_unlocked_by && data.surprise_unlocked_by !== identity){
-    msgs.push(data.surprise_unlocked_by + ' ne Daily Challenge complete kar liya ✅');
-  }
-  if(data.last_seen_by && data.last_seen_by !== identity && data.last_seen_at){
-    msgs.push(data.last_seen_by + ' yaha ' + timeAgo(data.last_seen_at) + ' aaya/aayi tha');
-  }
-  if(msgs.length === 0){ el.classList.remove('show'); return; }
-  el.textContent = msgs.join(' · ');
-  el.classList.add('show');
-}
-
-/* ---------------- APP STATE (Supabase) ---------------- */
-async function loadAppState(){
-  if(!sb){
-    surpriseUnlocked = localStorage.getItem('kk_surprise_unlocked') === 'true';
-    return;
-  }
-  const { data, error } = await sb.from('app_state').select('*').eq('id','main').maybeSingle();
-  if(error){ console.error(error); return; }
-  if(data){ surpriseUnlocked = !!data.surprise_unlocked; }
-}
-async function setSurpriseUnlocked(){
-  surpriseUnlocked = true;
-  localStorage.setItem('kk_surprise_unlocked', 'true');
-  if(sb){
-    const { error } = await sb.from('app_state').upsert({ id:'main', surprise_unlocked:true, updated_at:new Date().toISOString() });
-    if(error) console.error(error);
-    if(identity){
-      const { error: attrErr } = await sb.from('app_state').update({ surprise_unlocked_by: identity }).eq('id','main');
-      if(attrErr) console.warn('attribution not saved (optional column missing):', attrErr.message);
-    }
-  }
-  refreshMenuLock();
-}
-function refreshMenuLock(){
-  const btnCountdown = document.getElementById('btnCountdown');
-  const note = document.getElementById('countdownLockNote');
-  if(surpriseUnlocked){
-    btnCountdown.classList.remove('locked');
-    note.textContent = "apna progress dekho 📊";
-  } else {
-    btnCountdown.classList.add('locked');
-    note.textContent = 'pehle Daily Challenge complete karo';
-  }
-}
-
-/* ---------------- LOGIN ---------------- */
-const loginForm = document.getElementById('loginForm');
-const errorMsg = document.getElementById('errorMsg');
-
-(async function initialCheck(){
-  await loadAppState();
-  refreshMenuLock();
-  if(localStorage.getItem('kk_logged_in') === 'true' && identity){
-    document.getElementById('menuGreeting').textContent = 'Welcome, ' + identity;
-    updateIdentityBadge();
-    showScreen('menu');
-    pingLastSeen();
-  }
-})();
-
-loginForm.addEventListener('submit', async (e) => {
+document.getElementById('pwCancel').addEventListener('click', () => pwModal.classList.remove('show'));
+document.getElementById('pwForm').addEventListener('submit', e => {
   e.preventDefault();
-  const nameVal = document.getElementById('username').value.trim();
-  const passVal = document.getElementById('password').value;
-  if(!nameVal){ errorMsg.textContent = "Pehle apna username to daalo"; return; }
-  if(passVal !== FIXED_PASSWORD){ errorMsg.textContent = "Password galat hai — dobara try karo."; return; }
-  identity = nameVal;
-  localStorage.setItem('kk_identity', identity);
-  localStorage.setItem('kk_logged_in', 'true');
-  document.getElementById('menuGreeting').textContent = 'Welcome, ' + identity;
-  updateIdentityBadge();
-  showScreen('menu');
-  pingLastSeen();
+  const n = document.getElementById('uname').value.trim();
+  const pw = document.getElementById('pass').value;
+  if(!n){ document.getElementById('pwErr').textContent = 'Naam daalo'; return; }
+  if(pw !== FIXED_PASSWORD){ document.getElementById('pwErr').textContent = 'Password galat hai'; return; }
+  identity = n; localStorage.setItem('kk_identity', n);
+  pwModal.classList.remove('show');
+  show('chat');
 });
+document.getElementById('chatBack').addEventListener('click', () => show('pdf'));
 
-/* ---------------- MENU ---------------- */
-document.getElementById('btnSurprise').addEventListener('click', () => {
-  showScreen('surprise');
-  startSlides();
-});
-document.getElementById('btnChat').addEventListener('click', () => {
-  showScreen('chat');
-});
-document.getElementById('btnNotes').addEventListener('click', () => {
-  showScreen('notes');
-  showRandomNote();
-});
-document.getElementById('btnCountdown').addEventListener('click', () => {
-  if(!surpriseUnlocked) return;
-  showScreen('countdown');
-  startCountdowns();
-});
-document.getElementById('surpriseBackIcon').addEventListener('click', () => showScreen('menu'));
-document.getElementById('notesBackIcon').addEventListener('click', () => showScreen('menu'));
-document.getElementById('chatBackIcon').addEventListener('click', () => showScreen('menu'));
-document.getElementById('countdownBackIcon').addEventListener('click', () => {
-  stopCountdowns();
-  showScreen('menu');
-});
-
-/* ---------------- LOVE NOTES ---------------- */
-let lastNoteIndex = -1;
-function showRandomNote(){
-  let idx;
-  do { idx = Math.floor(Math.random() * loveNotes.length); } while (loveNotes.length > 1 && idx === lastNoteIndex);
-  lastNoteIndex = idx;
-  const card = document.getElementById('noteCard');
-  card.style.animation = 'none';
-  void card.offsetWidth;
-  card.style.animation = 'slideIn .4s ease';
-  card.textContent = loveNotes[idx];
-}
-document.getElementById('noteShuffle').addEventListener('click', showRandomNote);
-
-/* ---------------- SURPRISE SLIDES ---------------- */
-let slideIndex = 0;
-const slideText = document.getElementById('slideText');
-const nextBtn = document.getElementById('nextBtn');
-const finalBtnRow = document.getElementById('finalBtnRow');
-const yesBtn = document.getElementById('yesBtn');
-const noBtn = document.getElementById('noBtn');
-const surpriseStage = document.getElementById('surpriseStage');
-const progressFill = document.getElementById('progressFill');
-const slideCount = document.getElementById('slideCount');
-
-function renderSlide(){
-  const isFinal = (slideIndex === slides.length - 1);
-  slideText.textContent = slides[slideIndex];
-  slideText.style.animation = 'none';
-  void slideText.offsetWidth;
-  slideText.style.animation = '';
-  slideCount.textContent = (slideIndex + 1) + '/' + slides.length;
-  progressFill.style.width = (((slideIndex + 1) / slides.length) * 100) + '%';
-  nextBtn.style.display = isFinal ? 'none' : 'block';
-  finalBtnRow.style.display = isFinal ? 'flex' : 'none';
-}
-
-function startSlides(){
-  slideIndex = 0;
-  surpriseStage.classList.remove('dodging');
-  noBtn.style.left = ''; noBtn.style.top = '';
-  renderSlide();
-}
-
-nextBtn.addEventListener('click', () => {
-  if (slideIndex >= slides.length - 1) return;
-  slideIndex++;
-  renderSlide();
-});
-
-function spawnHearts(){
-  const wrap = document.getElementById('heartsBurst');
-  wrap.innerHTML = '';
-  const emojis = ['💛','💖','✨','💛','💗','✨','💛'];
-  emojis.forEach((e,i) => {
-    const span = document.createElement('span');
-    span.textContent = e;
-    span.style.setProperty('--dx', (Math.random()*160-80) + 'px');
-    span.style.setProperty('--rot', (Math.random()*60-30) + 'deg');
-    span.style.left = (10 + Math.random()*80) + '%';
-    span.style.animationDelay = (i*0.08) + 's';
-    wrap.appendChild(span);
-  });
-}
-
-let celebrateAdvanceTimer = null;
-function advanceToCountdown(){
-  if(celebrateAdvanceTimer){ clearTimeout(celebrateAdvanceTimer); celebrateAdvanceTimer = null; }
-  showScreen('countdown');
-  startCountdowns();
-}
-
-yesBtn.addEventListener('click', async () => {
-  document.getElementById('celebrateText').textContent = (identity ? identity + ', ' : '') + 'tumne haan bol diya! 💛';
-  showScreen('celebrate');
-  spawnHearts();
-  await setSurpriseUnlocked();
-  celebrateAdvanceTimer = setTimeout(advanceToCountdown, 2600);
-});
-document.getElementById('celebrateContinue').addEventListener('click', advanceToCountdown);
-
-// "Nahi" button apni jagah se hatke random corner me bhaag jayega
-noBtn.addEventListener('click', () => {
-  surpriseStage.classList.add('dodging');
-  const pad = 20;
-  const btnW = noBtn.offsetWidth || 100;
-  const btnH = noBtn.offsetHeight || 44;
-  const corners = [
-    { left: pad, top: pad },
-    { left: window.innerWidth - btnW - pad, top: pad },
-    { left: pad, top: window.innerHeight - btnH - pad },
-    { left: window.innerWidth - btnW - pad, top: window.innerHeight - btnH - pad }
-  ];
-  const choice = corners[Math.floor(Math.random() * corners.length)];
-  noBtn.style.left = choice.left + 'px';
-  noBtn.style.top = choice.top + 'px';
-});
-
-/* ---------------- COUNTDOWN / OUR STORY ---------------- */
-let togetherTimer = null;
-let datesTimer = null;
-let specialDates = [];
-let selectedTag = '📝';
-const TAGS = ['📝','📅','⏰','🎯'];
-
-document.getElementById('tagPicker').addEventListener('click', (e) => {
-  const btn = e.target.closest('button[data-tag]');
-  if(!btn) return;
-  selectedTag = btn.dataset.tag;
-  document.querySelectorAll('#tagPicker button').forEach(b => b.classList.toggle('active', b === btn));
-});
-
-function pad2(n){ return String(n).padStart(2,'0'); }
-
-function diffParts(fromDate, toDate){
-  let ms = toDate - fromDate;
-  const past = ms < 0;
-  ms = Math.abs(ms);
-  const totalSeconds = Math.floor(ms/1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return { days, hours, minutes, seconds, past };
-}
-
-function renderTogether(){
-  const wrap = document.getElementById('togetherNums');
-  const p = diffParts(TOGETHER_SINCE, new Date());
-  wrap.innerHTML = `
-    <div class="stat"><div class="num">${p.days}</div><div class="lbl">din</div></div>
-    <div class="stat"><div class="num">${pad2(p.hours)}</div><div class="lbl">ghante</div></div>
-    <div class="stat"><div class="num">${pad2(p.minutes)}</div><div class="lbl">minute</div></div>
-    <div class="stat"><div class="num">${pad2(p.seconds)}</div><div class="lbl">second</div></div>
-  `;
-}
-
-async function loadSpecialDates(){
-  if(!sb){
-    specialDates = JSON.parse(localStorage.getItem('kk_dates') || '[]');
-    return;
-  }
-  const { data, error } = await sb.from('special_dates').select('*').order('date_value', { ascending:true });
-  if(error){ console.error(error); return; }
-  specialDates = data || [];
-}
-
-/* labels can be: "🎂|praveen|Text" (new, with attribution), "🎂 Text" (older), or plain "Text" (oldest) */
-function splitLabel(label){
-  for(const t of TAGS){
-    if(label.startsWith(t + '|')){
-      const rest = label.slice(t.length + 1);
-      const sep = rest.indexOf('|');
-      if(sep !== -1) return { tag: t, addedBy: rest.slice(0, sep), text: rest.slice(sep + 1) };
-    }
-    if(label.startsWith(t + ' ')) return { tag: t, addedBy: null, text: label.slice(t.length + 1) };
-  }
-  return { tag: '🎯', addedBy: null, text: label };
-}
-
-function renderDatesList(){
-  const listEl = document.getElementById('datesList');
-  listEl.innerHTML = '';
-  if(specialDates.length === 0){
-    listEl.innerHTML = '<p class="empty-note">Abhi koi date add nahi hui — neeche se add karo.</p>';
-    return;
-  }
-  specialDates.forEach(d => {
-    const { tag, addedBy, text } = splitLabel(d.label);
-    const byLine = addedBy ? `<div class="added-by">${escapeHTML(addedBy)} ne add kiya</div>` : '';
-    const target = new Date(d.date_value);
-    const p = diffParts(new Date(), target);
-    const item = document.createElement('div');
-    item.className = 'date-item';
-    item.dataset.id = d.id;
-    if(p.past){
-      item.innerHTML = `
-        <span class="tag">${tag}</span>
-        <div class="body">
-          <div class="top-row"><strong>${escapeHTML(text)}</strong><button class="del" aria-label="Hatao">×</button></div>
-          <div class="empty-note" style="margin-top:4px;">🎉 Aa gaya!</div>
-          ${byLine}
-        </div>
-      `;
-    } else {
-      item.innerHTML = `
-        <span class="tag">${tag}</span>
-        <div class="body">
-          <div class="top-row"><strong>${escapeHTML(text)}</strong><button class="del" aria-label="Hatao">×</button></div>
-          <div class="mini-nums">
-            <span><span class="u">${p.days}</span> <span class="l">din</span></span>
-            <span><span class="u">${pad2(p.hours)}</span> <span class="l">ghante</span></span>
-            <span><span class="u">${pad2(p.minutes)}</span> <span class="l">min</span></span>
-            <span><span class="u">${pad2(p.seconds)}</span> <span class="l">sec</span></span>
-          </div>
-          ${byLine}
-        </div>
-      `;
-    }
-    item.querySelector('.del').addEventListener('click', () => deleteDate(d.id));
-    listEl.appendChild(item);
-  });
-}
-
-function tickDatesDisplay(){
-  document.querySelectorAll('.date-item').forEach(item => {
-    const id = item.dataset.id;
-    const d = specialDates.find(x => String(x.id) === String(id));
-    if(!d) return;
-    const p = diffParts(new Date(), new Date(d.date_value));
-    if(p.past){
-      const note = item.querySelector('.empty-note');
-      if(note) note.textContent = '🎉 Aa gaya!';
-      return;
-    }
-    const nums = item.querySelectorAll('.mini-nums .u');
-    if(nums.length === 4){
-      nums[0].textContent = p.days;
-      nums[1].textContent = pad2(p.hours);
-      nums[2].textContent = pad2(p.minutes);
-      nums[3].textContent = pad2(p.seconds);
-    }
-  });
-}
-
-async function deleteDate(id){
-  specialDates = specialDates.filter(d => String(d.id) !== String(id));
-  renderDatesList();
-  if(sb){
-    const { error } = await sb.from('special_dates').delete().eq('id', id);
-    if(error) console.error(error);
-  } else {
-    localStorage.setItem('kk_dates', JSON.stringify(specialDates));
-  }
-}
-
-document.getElementById('addDateForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const rawLabel = document.getElementById('dateLabel').value.trim();
-  const val = document.getElementById('dateValue').value;
-  if(!rawLabel || !val) return;
-  const label = selectedTag + '|' + (identity || '') + '|' + rawLabel;
-  const iso = new Date(val).toISOString();
-
-  if(sb){
-    const { data, error } = await sb.from('special_dates').insert({ label, date_value: iso }).select().single();
-    if(error){ console.error(error); return; }
-    specialDates.push(data);
-  } else {
-    const local = { id: 'local-' + Date.now(), label, date_value: iso };
-    specialDates.push(local);
-    localStorage.setItem('kk_dates', JSON.stringify(specialDates));
-  }
-  specialDates.sort((a,b) => new Date(a.date_value) - new Date(b.date_value));
-  renderDatesList();
-  document.getElementById('addDateForm').reset();
-  selectedTag = '📝';
-  document.querySelectorAll('#tagPicker button').forEach(b => b.classList.toggle('active', b.dataset.tag === '📝'));
-});
-
-function escapeHTML(str){
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
-
-async function startCountdowns(){
-  document.getElementById('syncNote').textContent = sb ? '' : '⚠️ Supabase jud nahi hai — abhi ye data sirf isi browser me save ho raha hai.';
-  renderTogether();
-  await loadSpecialDates();
-  renderDatesList();
-  if(togetherTimer) clearInterval(togetherTimer);
-  if(datesTimer) clearInterval(datesTimer);
-  togetherTimer = setInterval(renderTogether, 1000);
-  datesTimer = setInterval(tickDatesDisplay, 1000);
-}
-function stopCountdowns(){
-  if(togetherTimer) clearInterval(togetherTimer);
-  if(datesTimer) clearInterval(datesTimer);
-}
-
-/* ---------------- CHAT (real-time, saved forever, photo + video sharing) ---------------- */
-const CHAT_BUCKET = 'chat-media';
-const chatMessagesEl = document.getElementById('chatMessages');
+/* ---------- CHAT ---------- */
+const msgsEl = document.getElementById('msgs');
 const chatForm = document.getElementById('chatForm');
-const chatText = document.getElementById('chatText');
-const chatFile = document.getElementById('chatFile');
-const chatAttachBtn = document.getElementById('chatAttachBtn');
-const chatPreview = document.getElementById('chatPreview');
-const chatPreviewThumb = document.getElementById('chatPreviewThumb');
-const chatPreviewName = document.getElementById('chatPreviewName');
-const chatPreviewRemove = document.getElementById('chatPreviewRemove');
-let pendingFile = null;
-let chatChannel = null;
-let chatPollTimer = null;
-let lastMessageTimestamp = null;
+const txt = document.getElementById('txt');
+const fileIn = document.getElementById('file');
+const prev = document.getElementById('prev');
+let pendingFile = null, chatChannel = null, pollTimer = null, lastTs = null;
+const EMPTY = '<p class="empty">Abhi koi message nahi — sabse pehle tum bolo 👋</p>';
 
-chatAttachBtn.addEventListener('click', () => chatFile.click());
-
-chatFile.addEventListener('change', () => {
-  const file = chatFile.files[0];
-  if(!file) return;
-  pendingFile = file;
-  chatPreviewName.textContent = file.name;
-  chatPreviewThumb.innerHTML = '';
-  if(file.type.startsWith('image/')){
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    chatPreviewThumb.appendChild(img);
-  } else if(file.type.startsWith('video/')){
-    chatPreviewThumb.textContent = '🎬';
-  }
-  chatPreview.style.display = 'flex';
+document.getElementById('attach').addEventListener('click', () => fileIn.click());
+fileIn.addEventListener('change', () => {
+  const f = fileIn.files[0]; if(!f) return;
+  pendingFile = f;
+  document.getElementById('prevNm').textContent = f.name;
+  const th = document.getElementById('prevTh'); th.innerHTML = '';
+  if(f.type.startsWith('image/')){ const im = document.createElement('img'); im.src = URL.createObjectURL(f); th.appendChild(im); }
+  else th.textContent = '🎬';
+  prev.style.display = 'flex';
 });
+document.getElementById('prevRm').addEventListener('click', clearPending);
+function clearPending(){ pendingFile = null; fileIn.value = ''; prev.style.display = 'none'; }
+function toBottom(){ msgsEl.scrollTop = msgsEl.scrollHeight; }
+function pathFromUrl(u){ const i = u.indexOf('/' + BUCKET + '/'); return i === -1 ? null : u.slice(i + BUCKET.length + 2); }
 
-chatPreviewRemove.addEventListener('click', () => {
-  pendingFile = null;
-  chatFile.value = '';
-  chatPreview.style.display = 'none';
-});
-
-function scrollChatToBottom(){
-  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-}
-
-function chatTimeLabel(iso){
-  const d = new Date(iso);
-  return d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
-}
-
-function buildBubble(msg){
-  const mine = msg.sender === identity;
-  const wrap = document.createElement('div');
-  wrap.className = 'chat-bubble ' + (mine ? 'me' : 'them');
-
-  if(!mine){
-    const who = document.createElement('div');
-    who.className = 'who';
-    who.textContent = msg.sender;
-    wrap.appendChild(who);
+function buildBubble(m){
+  const mine = m.sender === identity;
+  const w = document.createElement('div');
+  w.className = 'b ' + (mine ? 'me' : 'them');
+  if(!mine){ const who = document.createElement('div'); who.className = 'who'; who.textContent = m.sender; w.appendChild(who); }
+  if(m.media_url){
+    const md = document.createElement('div'); md.className = 'media';
+    if(m.media_type === 'video'){ const v = document.createElement('video'); v.src = m.media_url; v.muted = true; v.playsInline = true; v.preload = 'metadata'; md.appendChild(v); }
+    else { const im = document.createElement('img'); im.src = m.media_url; im.loading = 'lazy'; md.appendChild(im); }
+    md.addEventListener('click', () => openLb(m.media_url, m.media_type));
+    w.appendChild(md);
   }
-
-  if(msg.media_url){
-    const media = document.createElement('div');
-    media.className = 'bubble-media';
-    if(msg.media_type === 'video'){
-      const v = document.createElement('video');
-      v.src = msg.media_url; v.muted = true; v.playsInline = true; v.preload = 'metadata';
-      media.appendChild(v);
-    } else {
-      const img = document.createElement('img');
-      img.src = msg.media_url; img.loading = 'lazy';
-      media.appendChild(img);
-    }
-    media.addEventListener('click', () => openLightbox(msg.media_url, msg.media_type));
-    wrap.appendChild(media);
-  }
-
-  if(msg.content){
-    const body = document.createElement('div');
-    body.className = 'bubble-body';
-    body.textContent = msg.content;
-    wrap.appendChild(body);
-  }
-
-  const foot = document.createElement('div');
-  foot.className = 'bubble-foot';
-
-  const time = document.createElement('div');
-  time.className = 'time';
-  time.textContent = chatTimeLabel(msg.created_at);
-  foot.appendChild(time);
-
+  if(m.content){ const b = document.createElement('div'); b.className = 'bb'; b.textContent = m.content; w.appendChild(b); }
+  const foot = document.createElement('div'); foot.className = 'foot';
+  const t = document.createElement('div'); t.className = 'time';
+  t.textContent = new Date(m.created_at).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  foot.appendChild(t);
   if(mine){
-    const delBtn = document.createElement('button');
-    delBtn.type = 'button';
-    delBtn.className = 'msg-del';
-    delBtn.setAttribute('aria-label', 'Message delete karo');
-    delBtn.textContent = '🗑';
-    delBtn.addEventListener('click', () => deleteSingleMessage(msg, wrap));
-    foot.appendChild(delBtn);
+    const d = document.createElement('button'); d.type = 'button'; d.className = 'del'; d.textContent = '🗑';
+    d.addEventListener('click', () => deleteOne(m, w));
+    foot.appendChild(d);
   }
-
-  wrap.appendChild(foot);
-
-  return wrap;
+  w.appendChild(foot);
+  return w;
 }
 
-/* ek single message delete karo — apna khud bheja hua message, uske media samet */
-async function deleteSingleMessage(msg, bubbleEl){
-  if(!sb) return;
-  const sure = confirm('Yeh message delete karna hai? Yeh sabke liye hat jayega.');
-  if(!sure) return;
-
+async function deleteOne(m, el){
+  if(!sb || !confirm('Yeh message sabke liye delete karna hai?')) return;
   try{
-    if(msg.media_url){
-      const idx = msg.media_url.indexOf('/' + CHAT_BUCKET + '/');
-      if(idx !== -1){
-        const path = msg.media_url.slice(idx + CHAT_BUCKET.length + 2);
-        const { error: rmErr } = await sb.storage.from(CHAT_BUCKET).remove([path]);
-        if(rmErr) console.warn('media delete nahi hui (aage badh rahe hain):', rmErr.message);
-      }
-    }
-    const { error } = await sb.from('messages').delete().eq('id', msg.id);
+    if(m.media_url){ const p = pathFromUrl(m.media_url); if(p) await sb.storage.from(BUCKET).remove([p]); }
+    const { error } = await sb.from('messages').delete().eq('id', m.id);
     if(error) throw error;
-    bubbleEl.remove();
-    if(!chatMessagesEl.querySelector('.chat-bubble')){
-      chatMessagesEl.innerHTML = '<p class="chat-empty">Abhi koi message nahi — sabse pehle tum bolo 👋</p>';
-    }
-  } catch(err){
-    console.error(err);
-    alert('Message delete nahi ho paya. Console check karo.');
-  }
+    el.remove();
+    if(!msgsEl.querySelector('.b')) msgsEl.innerHTML = EMPTY;
+  } catch(err){ console.error(err); alert('Message delete nahi ho paya.'); }
 }
 
-function appendMessage(msg){
-  if(chatMessagesEl.querySelector(`[data-mid="${msg.id}"]`)) return; // avoid duplicates
-  const bubble = buildBubble(msg);
-  bubble.dataset.mid = msg.id;
-  chatMessagesEl.appendChild(bubble);
-  scrollChatToBottom();
-  if(!lastMessageTimestamp || new Date(msg.created_at) > new Date(lastMessageTimestamp)){
-    lastMessageTimestamp = msg.created_at;
-  }
+function addMsg(m){
+  if(msgsEl.querySelector(`[data-mid="${m.id}"]`)) return;
+  const e = msgsEl.querySelector('.empty'); if(e) e.remove();
+  const b = buildBubble(m); b.dataset.mid = m.id;
+  msgsEl.appendChild(b); toBottom();
+  if(!lastTs || new Date(m.created_at) > new Date(lastTs)) lastTs = m.created_at;
 }
 
-async function loadChatHistory(){
-  chatMessagesEl.innerHTML = '<p class="chat-empty">Baatein load ho rahi hain...</p>';
-  if(!sb){
-    chatMessagesEl.innerHTML = '<p class="chat-empty">Chat ke liye Supabase connect hona zaroori hai.</p>';
-    return;
-  }
-  const { data, error } = await sb.from('messages').select('*').order('created_at', { ascending:true });
-  if(error){
-    chatMessagesEl.innerHTML = '<p class="chat-empty">Chat load nahi ho payi. (messages table check karo)</p>';
-    console.error(error);
-    return;
-  }
-  chatMessagesEl.innerHTML = '';
-  if(!data || data.length === 0){
-    chatMessagesEl.innerHTML = '<p class="chat-empty">Abhi koi message nahi — sabse pehle tum bolo 👋</p>';
-    lastMessageTimestamp = new Date(0).toISOString();
-  } else {
-    data.forEach(m => appendMessage(m));
-    lastMessageTimestamp = data[data.length - 1].created_at;
-  }
-  scrollChatToBottom();
+async function loadHistory(){
+  msgsEl.innerHTML = '<p class="empty">Load ho raha hai...</p>';
+  if(!sb){ msgsEl.innerHTML = '<p class="empty">Supabase connect nahi hai.</p>'; return; }
+  const { data, error } = await sb.from('messages').select('*').order('created_at', {ascending:true});
+  if(error){ msgsEl.innerHTML = '<p class="empty">Chat load nahi ho payi.</p>'; console.error(error); return; }
+  msgsEl.innerHTML = '';
+  if(!data || !data.length){ msgsEl.innerHTML = EMPTY; lastTs = new Date(0).toISOString(); }
+  else { data.forEach(addMsg); lastTs = data[data.length-1].created_at; }
+  toBottom();
 }
-
-function subscribeChatRealtime(){
-  if(!sb || chatChannel) return;
-  chatChannel = sb.channel('messages-live')
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages' }, (payload) => {
-      const emptyNote = chatMessagesEl.querySelector('.chat-empty');
-      if(emptyNote) emptyNote.remove();
-      appendMessage(payload.new);
-    })
-    .subscribe();
-}
-function unsubscribeChatRealtime(){
-  if(chatChannel){ sb.removeChannel(chatChannel); chatChannel = null; }
-}
-
-/* backup for realtime — checks for anything new every few seconds while chat is open,
-   so messages always show up even if the realtime channel isn't set up yet */
-async function pollNewMessages(){
-  if(!sb || !lastMessageTimestamp) return;
-  const { data, error } = await sb.from('messages').select('*').gt('created_at', lastMessageTimestamp).order('created_at', { ascending:true });
-  if(error) return;
-  if(data && data.length){
-    const emptyNote = chatMessagesEl.querySelector('.chat-empty');
-    if(emptyNote) emptyNote.remove();
-    data.forEach(m => appendMessage(m));
-  }
-}
-function startChatPolling(){
-  stopChatPolling();
-  chatPollTimer = setInterval(pollNewMessages, 3000);
-}
-function stopChatPolling(){
-  if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer = null; }
-}
-
-async function uploadChatMedia(file){
-  const ext = file.name.split('.').pop() || 'dat';
-  const path = (identity || 'anon') + '/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
-  const { error: upErr } = await sb.storage.from(CHAT_BUCKET).upload(path, file, { cacheControl:'3600', upsert:false });
-  if(upErr) throw upErr;
-  const { data } = sb.storage.from(CHAT_BUCKET).getPublicUrl(path);
-  return data.publicUrl;
-}
-
-chatForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const text = chatText.value.trim();
-  const file = pendingFile;
-  if(!text && !file) return;
-  if(!sb){ alert('Chat ke liye Supabase connect hona zaroori hai.'); return; }
-
-  document.getElementById('chatSendBtn').disabled = true;
-  try{
-    let media_url = null, media_type = null;
-    if(file){
-      media_url = await uploadChatMedia(file);
-      media_type = file.type.startsWith('video/') ? 'video' : 'image';
-    }
-    const { error } = await sb.from('messages').insert({
-      sender: identity, content: text || null, media_url, media_type
-    });
-    if(error) throw error;
-    chatText.value = '';
-    pendingFile = null; chatFile.value = ''; chatPreview.style.display = 'none';
-  } catch(err){
-    console.error(err);
-    alert('Message bhej nahi paya — Supabase "messages" table aur "' + CHAT_BUCKET + '" storage bucket check karo.');
-  } finally {
-    document.getElementById('chatSendBtn').disabled = false;
-  }
-});
-
-/* poori chat delete — sabhi messages aur unki media Supabase se hata do, phir UI reset karo */
-async function deleteEntireChat(){
-  if(!sb){ alert('Chat delete karne ke liye Supabase connect hona zaroori hai.'); return; }
-  const sure = confirm('Poori chat delete karni hai? Yeh sabke liye permanently delete ho jayegi, wapas nahi aayegi.');
-  if(!sure) return;
-
-  const btn = document.getElementById('chatDeleteAllIcon');
-  if(btn) btn.disabled = true;
-
-  try{
-    // pehle media files wali messages nikaalo taaki storage se unhe bhi hata sakein
-    const { data: mediaRows, error: fetchErr } = await sb.from('messages').select('media_url').not('media_url', 'is', null);
-    if(fetchErr) throw fetchErr;
-
-    if(mediaRows && mediaRows.length){
-      const paths = mediaRows.map(row => {
-        const idx = row.media_url.indexOf('/' + CHAT_BUCKET + '/');
-        return idx === -1 ? null : row.media_url.slice(idx + CHAT_BUCKET.length + 2);
-      }).filter(Boolean);
-      if(paths.length){
-        const { error: rmErr } = await sb.storage.from(CHAT_BUCKET).remove(paths);
-        if(rmErr) console.warn('kuch media files delete nahi hui (aage badh rahe hain):', rmErr.message);
-      }
-    }
-
-    const { error: delErr } = await sb.from('messages').delete().not('id', 'is', null);
-    if(delErr) throw delErr;
-
-    chatMessagesEl.innerHTML = '<p class="chat-empty">Abhi koi message nahi — sabse pehle tum bolo 👋</p>';
-    lastMessageTimestamp = new Date(0).toISOString();
-  } catch(err){
-    console.error(err);
-    alert('Chat delete nahi ho payi. Console check karo.');
-  } finally {
-    if(btn) btn.disabled = false;
-  }
-}
-document.getElementById('chatDeleteAllIcon').addEventListener('click', deleteEntireChat);
 
 function openChat(){
-  updateIdentityBadge();
-  loadChatHistory();
-  subscribeChatRealtime();
-  startChatPolling();
-  pingLastSeen();
+  loadHistory();
+  if(sb && !chatChannel){
+    chatChannel = sb.channel('messages-live')
+      .on('postgres_changes', {event:'INSERT', schema:'public', table:'messages'}, p => addMsg(p.new))
+      .subscribe();
+  }
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if(!sb || !lastTs) return;
+    const { data, error } = await sb.from('messages').select('*').gt('created_at', lastTs).order('created_at', {ascending:true});
+    if(!error && data) data.forEach(addMsg);
+  }, 3000);
 }
 function closeChat(){
-  unsubscribeChatRealtime();
-  stopChatPolling();
+  if(chatChannel && sb){ sb.removeChannel(chatChannel); chatChannel = null; }
+  clearInterval(pollTimer); pollTimer = null;
 }
 
-/* ---------------- LIGHTBOX ---------------- */
-const lightbox = document.getElementById('lightbox');
-const lightboxContent = document.getElementById('lightboxContent');
-function openLightbox(url, type){
-  lightboxContent.innerHTML = '';
-  if(type === 'video'){
-    const v = document.createElement('video');
-    v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
-    lightboxContent.appendChild(v);
-  } else {
-    const img = document.createElement('img');
-    img.src = url;
-    lightboxContent.appendChild(img);
-  }
-  lightbox.classList.add('show');
+async function uploadMedia(file){
+  const ext = file.name.split('.').pop() || 'dat';
+  const path = (identity || 'anon') + '/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+  const { error } = await sb.storage.from(BUCKET).upload(path, file, {cacheControl:'3600', upsert:false});
+  if(error) throw error;
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
-function closeLightbox(){
-  lightbox.classList.remove('show');
-  lightboxContent.innerHTML = '';
+
+chatForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const text = txt.value.trim(), file = pendingFile;
+  if(!text && !file) return;
+  if(!sb){ alert('Supabase connect nahi hai.'); return; }
+  const btn = document.getElementById('sendBtn'); btn.disabled = true;
+  try{
+    let media_url = null, media_type = null;
+    if(file){ media_url = await uploadMedia(file); media_type = file.type.startsWith('video/') ? 'video' : 'image'; }
+    const { error } = await sb.from('messages').insert({ sender: identity, content: text || null, media_url, media_type });
+    if(error) throw error;
+    txt.value = ''; clearPending();
+  } catch(err){ console.error(err); alert('Message bhej nahi paya — messages table / chat-media bucket check karo.'); }
+  finally { btn.disabled = false; }
+});
+
+document.getElementById('chatDelAll').addEventListener('click', async () => {
+  if(!sb || !confirm('Poori chat permanently delete karni hai?')) return;
+  try{
+    const { data: rows, error: fe } = await sb.from('messages').select('media_url').not('media_url', 'is', null);
+    if(fe) throw fe;
+    const paths = (rows || []).map(r => pathFromUrl(r.media_url)).filter(Boolean);
+    if(paths.length) await sb.storage.from(BUCKET).remove(paths);
+    const { error } = await sb.from('messages').delete().not('id', 'is', null);
+    if(error) throw error;
+    msgsEl.innerHTML = EMPTY; lastTs = new Date(0).toISOString();
+  } catch(err){ console.error(err); alert('Chat delete nahi ho payi.'); }
+});
+
+/* ---------- LIGHTBOX ---------- */
+const lb = document.getElementById('lb'), lbC = document.getElementById('lbC');
+function openLb(url, type){
+  lbC.innerHTML = '';
+  const el = document.createElement(type === 'video' ? 'video' : 'img');
+  el.src = url;
+  if(type === 'video'){ el.controls = true; el.autoplay = true; el.playsInline = true; }
+  lbC.appendChild(el); lb.classList.add('show');
 }
-document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+function closeLb(){ lb.classList.remove('show'); lbC.innerHTML = ''; }
+document.getElementById('lbClose').addEventListener('click', closeLb);
+lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
 </script>
 </body>
 </html>
