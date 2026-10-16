@@ -435,6 +435,7 @@ window.addEventListener('scroll', () => {
 /* ---------- SCREENS ---------- */
 const scr = { pdf: document.getElementById('screen-pdf'), chat: document.getElementById('screen-chat') };
 function show(name){
+  try{ sessionStorage.setItem('kk_screen', name); }catch(e){}
   Object.values(scr).forEach(s => s.classList.remove('active'));
   scr[name].classList.add('active');
   if(name === 'chat'){ openChat(); } else { closeChat(); window.scrollTo(0, document.body.scrollHeight); }
@@ -443,6 +444,8 @@ function show(name){
 /* ---------- PASSWORD ---------- */
 const pwModal = document.getElementById('pwModal');
 function openPassword(){
+  let logged = false; try{ logged = localStorage.getItem('kk_logged') === '1' && !!localStorage.getItem('kk_user'); }catch(e){}
+  if(logged){ identity = localStorage.getItem('kk_user'); show('chat'); return; }
   document.getElementById('uname').value = identity;
   document.getElementById('pass').value = '';
   document.getElementById('pwErr').textContent = '';
@@ -456,6 +459,7 @@ document.getElementById('pwForm').addEventListener('submit', e => {
   if(!n){ document.getElementById('pwErr').textContent = 'Naam daalo'; return; }
   if(pw !== FIXED_PASSWORD){ document.getElementById('pwErr').textContent = 'Password galat hai'; return; }
   identity = n; localStorage.setItem('kk_identity', n);
+  try{ localStorage.setItem('kk_logged','1'); localStorage.setItem('kk_user', n); }catch(e){}
   pwModal.classList.remove('show');
   show('chat');
 });
@@ -609,6 +613,13 @@ function openLb(url, type){
 function closeLb(){ lb.classList.remove('show'); lbC.innerHTML = ''; }
 document.getElementById('lbClose').addEventListener('click', closeLb);
 lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
+/* refresh par login bana rahe; tab/browser band hote hi localStorage clear -> logout */
+try{
+  if(localStorage.getItem('kk_logged') === '1' && localStorage.getItem('kk_user')){
+    identity = localStorage.getItem('kk_user');
+    if(sessionStorage.getItem('kk_screen') === 'chat') show('chat');
+  }
+}catch(e){}
 </script>
 </body>
 </html>
